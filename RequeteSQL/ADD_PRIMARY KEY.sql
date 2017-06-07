@@ -1,5 +1,5 @@
+use Librairie
 
-USE Librairie
 
 ALTER TABLE Client
 ADD CONSTRAINT pkClient
@@ -59,56 +59,29 @@ PRIMARY KEY(nom)
 
 ALTER TABLE Avis
 ADD CONSTRAINT pkAvis
-PRIMARY KEY(isbnLivre)
-
-ALTER TABLE Avis
-ADD CONSTRAINT pkAvis
-PRIMARY KEY(idLigneDeCommande)
+PRIMARY KEY(isbnLivre,idLigneDeCommande)
 
 ALTER TABLE Genre
 ADD CONSTRAINT pkGenre
-PRIMARY KEY (idSousThematique)
-
-ALTER TABLE Genre
-ADD CONSTRAINT pkGenre
-PRIMARY KEY (isbnLivre)
+PRIMARY KEY (idSousThematique,isbnLivre)
 
 ALTER TABLE Redaction
 ADD CONSTRAINT pkRedaction
-PRIMARY KEY (idAuteur)
-
-ALTER TABLE Redaction
-ADD CONSTRAINT pkRedaction
-PRIMARY KEY (isbnLivre)
+PRIMARY KEY (idAuteur,isbnLivre)
 
 ALTER TABLE Concerne
 ADD CONSTRAINT pkConcerne
-PRIMARY KEY (nomEditeur)
-
-ALTER TABLE Concerne
-ADD CONSTRAINT pkConcerne
-PRIMARY KEY (idEvenement)
+PRIMARY KEY (nomEditeur,idEvenement)
 
 ALTER TABLE Presentation
 ADD CONSTRAINT pkPresentation
-PRIMARY KEY (isbnLivre)
-
-ALTER TABLE Presentation
-ADD CONSTRAINT pkPresentation
-PRIMARY KEY (idEvenement)
+PRIMARY KEY (isbnLivre,idEvenement)
 
 ALTER TABLE Theme
 ADD CONSTRAINT pkTheme
-PRIMARY KEY (idSousThematique)
-
-ALTER TABLE Theme
-ADD CONSTRAINT pkTheme
-PRIMARY KEY (idEvenement)
+PRIMARY KEY (idSousThematique,idEvenement)
 
 ALTER TABLE Invitation
 ADD CONSTRAINT pkInvitation
-PRIMARY KEY (idAuteur)
+PRIMARY KEY (idAuteur,idEvenement)
 
-ALTER TABLE Invitation
-ADD CONSTRAINT pkInvitation
-PRIMARY KEY (idEvenement)
