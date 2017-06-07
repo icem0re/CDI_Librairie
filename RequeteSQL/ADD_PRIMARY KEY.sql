@@ -1,5 +1,5 @@
 
-
+USE Librairie
 
 ALTER TABLE Client
 ADD CONSTRAINT pkClient
@@ -55,7 +55,7 @@ PRIMARY KEY (idEmploye)
 
 ALTER TABLE Parametre
 ADD CONSTRAINT pkParametre
-PRIMARY KEY(nomParametre)
+PRIMARY KEY(nom)
 
 ALTER TABLE Avis
 ADD CONSTRAINT pkAvis
