@@ -61,20 +61,10 @@ ALTER TABLE Avis
 DROP CONSTRAINT pkAvis
 
 
-ALTER TABLE Avis
-DROP CONSTRAINT pkAvis
-
 
 ALTER TABLE Genre
 DROP CONSTRAINT pkGenre
 
-
-ALTER TABLE Genre
-DROP CONSTRAINT pkGenre
-
-
-ALTER TABLE Redaction
-DROP CONSTRAINT pkRedaction
 
 
 ALTER TABLE Redaction
@@ -85,20 +75,9 @@ ALTER TABLE Concerne
 DROP CONSTRAINT pkConcerne
 
 
-ALTER TABLE Concerne
-DROP CONSTRAINT pkConcerne
-
 
 ALTER TABLE Presentation
 DROP CONSTRAINT pkPresentation
-
-
-ALTER TABLE Presentation
-DROP CONSTRAINT pkPresentation
-
-
-ALTER TABLE Theme
-DROP CONSTRAINT pkTheme
 
 
 ALTER TABLE Theme
@@ -109,6 +88,5 @@ ALTER TABLE Invitation
 DROP CONSTRAINT pkInvitation
 
 
-ALTER TABLE Invitation
-DROP CONSTRAINT pkInvitation
+
 
