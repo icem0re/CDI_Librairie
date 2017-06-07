@@ -1,6 +1,6 @@
 use Librairie
 
-create table Client(
+CREATE TABLE Client(
 idClient bigint identity(1,1) not null,
 nomClient varchar(50) not null,
 prenomClient varchar(50) not null,
@@ -11,7 +11,7 @@ dateNaissanceClient Date not null,
 activiteClient bit,
 )
 
-create table Adresse(
+CREATE TABLE Adresse(
 idAdresse bigint identity(1,1) not null,
 idClient bigint not null,
 typeAdresse varchar(50) not null,
@@ -26,13 +26,13 @@ ville varchar(50) not null,
 pays varchar(50)
 )
 
-create table Livreur(
+CREATE TABLE Livreur(
 nomLivreur varchar(50) not null,
 fraisPortLivreur money not null,
 delaiLivraisonLivreur int,
 )
 
-create table Commande(
+CREATE TABLE Commande(
 numCommande bigint identity(1,1) not null,
 idClient bigint not null,
 idAdresseFacturation bigint not null,
@@ -44,12 +44,12 @@ dateExpeditionCommande datetime,
 dateAccuseReceptionCommande Datetime,
 )
 
-create table TVA(
+CREATE TABLE TVA(
 nomTVA varchar(50) not null,
 tauxTVA float not null,
 )
 
-create table Livre(
+CREATE TABLE Livre(
 isbnLivre varchar(13) not null,
 nomTVA varchar(50) not null,
 nomEditeur varchar(50) not null,
@@ -64,11 +64,11 @@ poidLivre integer,
 affichageLivre bit,
 )
 
-create table Thematique(
+CREATE TABLE Thematique(
 nomThematique varchar(50)not null,
 )
 
-create table LigneDeCommande(
+CREATE TABLE LigneDeCommande(
 idLigneDeCommande bigint identity(1,1) not null,
 numCommande bigint not null,
 isbnLivre varchar(13) not null,
@@ -78,7 +78,7 @@ TVALigneDeCommande float not null,
 reductionLigneDeCommande float,
 )
 
-create table Auteur(
+CREATE TABLE Auteur(
 idAuteur bigint identity(1,1) not null,
 nomAuteur varchar(50) not null,
 prenomAuteur varchar(50) not null,
@@ -89,20 +89,20 @@ photoAuteur varchar,
 bioAuteur text,
 )
 
-create table Editeur(
+CREATE TABLE Editeur(
 nomEditeur varchar(50) not null,
 logoEditeur varchar,
 cessationEditeur bit,
 )
 
-create table SousThematique(
+CREATE TABLE SousThematique(
 idSousThematique varchar(50) not null,
 nomThematique varchar(50) not null,
 nomSousThematique varchar(50),
 descriptionSousThematique text,
 )
 
-create table Employe(
+CREATE TABLE Employe(
 idEmploye bigint identity(1,1) not null,
 nomEmploye varchar(50) not null,
 prenomEmploye varchar(50) not null,
@@ -113,7 +113,7 @@ debutPosteEmploye Date not null,
 finPosteEmploye Date,
 )
 
-create table Evenement(
+CREATE TABLE Evenement(
 idEvenement bigint identity(1,1) not null,
 nomEvenement varchar(50) not null,
 descriptionEvenement text not null,
@@ -125,42 +125,42 @@ codePromoEvenement varchar(15),
 promoImmediatEvenement bit,
 )
 
-create table Parametre(
+CREATE TABLE Parametre(
 nom varchar(50) not null,
 propriete text,
 )
 
-create table Concerne(
+CREATE TABLE Concerne(
 nomEditeur varchar(50) not null,
 idEvenement bigint not null,
 )
 
-create table Redaction(
+CREATE TABLE Redaction(
 idAuteur bigint not null,
 isbnLivre varchar(13) not null,
 )
 
-create table Invitation(
+CREATE TABLE Invitation(
 idAuteur bigint not null,
 idEvenement bigint not null,
 )
 
-create table Presentation(
+CREATE TABLE Presentation(
 isbnLivre varchar(13) not null,
 idEvenement bigint not null,
 )
 
-create table Theme(
+CREATE TABLE Theme(
 idSousThematique varchar(50) not null,
 idEvenement bigint not null,
 )
 
-create table Genre(
+CREATE TABLE Genre(
 idSousThematique varchar(50) not null,
 isbnLivre varchar(13) not null,
 )
 
-create table Avis(
+CREATE TABLE Avis(
 isbnLivre varchar(13) not null,
 idLigneDeCommande bigint not null,
 commentaireAvis text,
