@@ -65,7 +65,7 @@ affichageLivre bit,
 )
 
 create table Thematique(
-nomThematique varchar(50),
+nomThematique varchar(50)not null,
 )
 
 create table LigneDeCommande(
@@ -126,7 +126,7 @@ promoImmediatEvenement bit,
 )
 
 create table Parametre(
-nom varchar(50),
+nom varchar(50) not null,
 propriete text,
 )
 
