@@ -125,7 +125,7 @@ codePromoEvenement varchar(15),
 promoImmediatEvenement bit,
 )
 
-create table Parrametre(
+create table Parametre(
 nom varchar(50),
 propriete text,
 )
