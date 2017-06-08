@@ -6,7 +6,7 @@
 
 GO;
 /**
- TRIGGER INSERT UPDATE ON TABLE Expedition
+ TRIGGER INSERT UPDATE ON TABLE Auteur
 **/
 CREATE TRIGGER InsertUpdateAuteur
 ON Auteur
@@ -16,8 +16,8 @@ AS
 	IF @@rowcount = 0 RETURN;
 	
 	DECLARE @hasError AS BIT = 0;
-	DECLARE @dateNaissance AS DATE;--= (SELECT dateNaissanceAuteur FROM inserted);
-	DECLARE @dateDeces AS DATE;-- = (SELECT dateDecesAuteur FROM inserted);
+	DECLARE @dateNaissance AS DATE;
+	DECLARE @dateDeces AS DATE;
 	DECLARE insertedCursor CURSOR
 		FOR SELECT dateNaissanceAuteur, 
 			dateDecesAuteur 
@@ -60,11 +60,12 @@ AS
 		IF EXISTS (SELECT * FROM DELETED)
 		BEGIN
 			UPDATE Auteur
-				SET nomAuteur = ins.nomAuteur,
-					prenomAuteur = ins.prenomAuteur,
+				SET nomAuteur = UPPER(ins.nomAuteur),
+					prenomAuteur = CONCAT( UPPER(SUBSTRING(ins.prenomAuteur,1,1)) ,
+								LOWER(SUBSTRING(ins.prenomAuteur,2,LEN(ins.prenomAuteur)-1)) ),
 					dateNaissanceAuteur = ins.dateNaissanceAuteur,
 					dateDecesAuteur = ins.dateDecesAuteur,
-					nationaliteAuteur = ins.nationaliteAuteur,
+					nationaliteAuteur = UPPER(ins.nationaliteAuteur),
 					photoAuteur = ins.photoAuteur,
 					bioAuteur = ins.bioAuteur
 				FROM Auteur aute
@@ -83,11 +84,12 @@ AS
 						photoAuteur,
 						bioAuteur
 					)
-				SELECT nomAuteur,
-					prenomAuteur,
+				SELECT UPPER(nomAuteur),
+					CONCAT( UPPER(SUBSTRING(prenomAuteur,1,1)) ,
+						LOWER(SUBSTRING(prenomAuteur,2,LEN(prenomAuteur)-1)) ),
 					dateNaissanceAuteur,
 					dateDecesAuteur,
-					nationaliteAuteur,
+					UPPER(nationaliteAuteur),
 					photoAuteur,
 					bioAuteur
 				FROM INSERTED

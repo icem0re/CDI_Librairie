@@ -1,10 +1,15 @@
 
+/* InsertUpdateAuteur :
+* Vérification que la date de fin de poste d'un employé
+* ne préccéde pas la date de mise en poste
+*/
+
 GO;
 /**
- TRIGGER INSERT UPDATE ON TABLE Expedition
+ TRIGGER INSERT UPDATE ON TABLE Employe
 **/
 CREATE TRIGGER InsertUpdateEmploye
-ON Auteur
+ON Employe
 INSTEAD OF INSERT, UPDATE
 AS
 	-- STOPS IF NO ROW AFFECTED
@@ -55,8 +60,9 @@ AS
 		IF EXISTS (SELECT * FROM DELETED)
 		BEGIN
 			UPDATE Employe
-				SET nomEmploye = ins.nomEmploye,
-					prenomEmploye = ins.prenomEmploye,
+				SET nomEmploye = UPPER(ins.nomEmploye),
+					prenomEmploye = CONCAT( UPPER(SUBSTRING(ins.prenomEmploye,1,1)) ,
+								LOWER(SUBSTRING(ins.prenomEmploye,2,LEN(ins.prenomEmploye)-1)) ),
 					loginEmploye = ins.loginEmploye,
 					mdpEmploye = ins.mdpEmploye,
 					emailEmploye = ins.emailEmploye,
@@ -79,8 +85,9 @@ AS
 						finPosteEmploye
 					)
 				SELECT nomEmploye,
-						prenomEmploye,
-						loginEmploye,
+						UPPER(prenomEmploye),
+						CONCAT( UPPER(SUBSTRING(prenomEmploye,1,1)) ,
+								LOWER(SUBSTRING(prenomEmploye,2,LEN(prenomEmploye)-1)) ),
 						mdpEmploye,
 						emailEmploye,
 						debutPosteEmploye,
