@@ -25,10 +25,3 @@ ALTER TABLE SousThematique ADD CONSTRAINT unThematique UNIQUE(nomThematique, nom
 * TABLE Evenement
 */
 ALTER TABLE Evenement ADD CONSTRAINT unCodePromo UNIQUE(codePromoEvenement);
-
-
-
-/**
-* TABLE Adresse
-*/
-ALTER TABLE Adresse ADD CONSTRAINT unNomAdresseCient UNIQUE(nomAdresse, idClient);
