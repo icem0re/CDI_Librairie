@@ -85,3 +85,14 @@ ALTER TABLE Invitation
 ADD CONSTRAINT pkInvitation
 PRIMARY KEY (idAuteur,idEvenement)
 
+ALTER TABLE Domiciliation
+ADD CONSTRAINT pkDomiciliation
+PRIMARY KEY(idClient,idAdresse)
+
+ALTER TABLE Facturation
+ADD CONSTRAINT pkFacturation
+PRIMARY KEY (idClient,idAdresse)
+
+ALTER TABLE Statut
+ADD CONSTRAINT pkStatut
+PRIMARY KEY (code)
