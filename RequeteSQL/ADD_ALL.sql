@@ -9,6 +9,7 @@ mdpClient varchar(50) not null,
 emailClient varchar(255) not null,
 dateNaissanceClient Date not null,
 statutClient varchar(30),
+derniereConnexionClient datetime not null, 
 )
 
 CREATE TABLE Adresse(
