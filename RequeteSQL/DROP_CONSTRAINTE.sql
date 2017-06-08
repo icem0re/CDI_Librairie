@@ -24,8 +24,3 @@ ALTER TABLE SousThematique DROP CONSTRAINT unThematique;
 * TABLE Evenement
 */
 ALTER TABLE Evenement DROP CONSTRAINT unCodePromo;
-
-/**
-* TABLE Adresse
-*/
-ALTER TABLE Adresse DROP CONSTRAINT unNomAdresseCient;
