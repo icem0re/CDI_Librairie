@@ -13,7 +13,6 @@ statutClient varchar(30),
 
 CREATE TABLE Adresse(
 idAdresse bigint identity(1,1) not null,
-typeAdresse varchar(50) not null,
 nomAdresse varchar(150) not null,
 destinataireAdresse varchar(150) not null,
 typeVoie varchar(20),
@@ -430,26 +429,26 @@ references Evenement(idEvenement)
 
 ALTER TABLE Client 
 ADD CONSTRAINT unLoginClient 
-UNIQUE(loginClient);
+UNIQUE(loginClient)
 
 ALTER TABLE Client 
 ADD CONSTRAINT unEmailClient 
-UNIQUE(emailClient);
+UNIQUE(emailClient)
 
 ALTER TABLE Client 
 ADD CONSTRAINT dfstatutClient 
-DEFAULT 1 FOR statutClient;
+DEFAULT 1 FOR statutClient
 
 /**
 * TABLE Employe
 */
 ALTER TABLE Employe 
 ADD CONSTRAINT unLoginEmploye 
-UNIQUE(loginEmploye);
+UNIQUE(loginEmploye)
 
 ALTER TABLE Employe
 ADD CONSTRAINT unEmailEmploye 
-UNIQUE(emailEmploye);
+UNIQUE(emailEmploye)
 
 
 /**
@@ -457,7 +456,7 @@ UNIQUE(emailEmploye);
 */
 ALTER TABLE SousThematique 
 ADD CONSTRAINT unThematique 
-UNIQUE(nomThematique, nomSousThematique);
+UNIQUE(nomThematique, nomSousThematique)
 
 
 /**
@@ -465,5 +464,5 @@ UNIQUE(nomThematique, nomSousThematique);
 */
 ALTER TABLE Evenement 
 ADD CONSTRAINT unCodePromo 
-UNIQUE(codePromoEvenement);
+UNIQUE(codePromoEvenement)
 
