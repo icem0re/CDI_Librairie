@@ -1,5 +1,24 @@
 use Librairie
 
+delete from Genre
+delete from Presentation
+delete from Redaction
+DELETE  FROM Auteur;
+DBCC CHECKIDENT ('Auteur', RESEED, 0);
+DELETE FROM Adresse;
+DBCC CHECKIDENT ('Adresse', RESEED, 0);
+delete from Client
+DBCC CHECKIDENT ('Client', RESEED, 0);
+delete from Livre
+delete from TVA
+delete from Livreur
+DELETE FROM Editeur;
+DELETE FROM Statut;
+DELETE FROM Evenement;
+DBCC CHECKIDENT ('Evenement', RESEED, 0);
+delete from SousThematique
+delete from Thematique
+
 INSERT INTO Thematique ( nomThematique )
 
 VALUES ( 'Science-Fiction'), 
@@ -8,7 +27,7 @@ VALUES ( 'Science-Fiction'),
 		('Fantastique'),
 		('Heroic-fantasy')
 
-select * from Thematique
+
 
 INSERT INTO SousThematique (idSousThematique,nomThematique, nomSousThematique, descriptionSousThematique)
 
@@ -16,10 +35,7 @@ VALUES ('SciFi','Science-Fiction', 'Robotique', 'C''est une thématique sur le f
 		('Eso','Esotérisme', 'Bouddhisme', ' Cette rubrique concerne tout ce qui n''est pas sciences éxactes, particulièrement chez les bouddhistes'),
 		('Fant','Fantastique','Horreur-Fantastique',' De l''horreur mélangé a du fantastique: c''est pas beau et ca n''éxiste pas!')
 
-select * from SousThematique
 
-DELETE FROM Evenement;
-DBCC CHECKIDENT ('Evenement', RESEED, 0);
 
 INSERT INTO Evenement (nomEvenement,descriptionEvenement,dateDebutEvenement,dateFinEvenement,lieuEvenement,reductionEvenement,codePromoEvenement,promoImmediatEvenement,commentaireEvenement)
 
@@ -27,10 +43,7 @@ VALUES( 'SALON DU LIVRE 2017', 'Grand public, professionnels du livre et amoureu
 	( 'LECTURE EN FETE', 'Evenement culturel autour de la lecture', '02/12/2017', '03/12/2017', 'Roquebrune-Cap-Martin', '95','CREVAR','','Il faut savoir lire vite!'),
 	( '28EME SALON DU LIVRE', 'Le salon du livre à Colmar!', '25/11/2017', '26/11/2017', 'Colmar','5',NULL,NULL,NULL)
 
-select * from Evenement
 
-DELETE FROM Statut;
-DBCC CHECKIDENT ('Statut', RESEED, 0);
 
 insert into Statut(code, info)
 
@@ -56,11 +69,7 @@ values
 ('LivP','Livreur perdu'),
 ('LivMPLF','Livreur mort pour la France !!!')
 
-select * from Statut
 
-
-DELETE FROM Editeur;
-DBCC CHECKIDENT ('Editeur', RESEED, 0);
 
 INSERT INTO Editeur ( nomEditeur, logoEditeur, statutEditeur)
 
@@ -68,9 +77,7 @@ VALUES ('Vintage Books','','EdiAct'),
 		('Le livre de poche','','EdiPause'),
 		('J''ai lu','','EdiAct')
 
-select * from Editeur
 
-delete from Livreur
 
 INSERT INTO Livreur (nomLivreur, fraisPortLivreur, delaiLivraisonLivreur,statutLivreur)
 
@@ -78,16 +85,13 @@ VALUES ('Chronopost','10',NULL,'LivER'),
 		('DPD','12','1','LivP'),
 		('DHL','8','2','LivMPLF')
 
-select * from Livreur
 
 insert into TVA(nomTVA, tauxTVA)
 
 values
 ('TVA5%','5.5')
 
-select * from TVA
 
-delete from Livre
 
 INSERT INTO Livre (isbnLivre, nomTVA, nomEditeur, titreLivre, sousTitreLivre, dateParutionLivre, resumeLivre, extraitLivre, imageLivre, prixHTLivre, poidLivre, affichageLivre)
 
@@ -99,9 +103,6 @@ VALUES('0375705106','TVA5%', 'Vintage Books',' Way of Zen','','24/07/1972', 'ens
 	('2253111465','TVA5%','Le livre de poche','L''Arbre des possibles','','2002-10-01','Un recueil d’histoires courtes qui présentent toutes une hypothèse poussée à son extrême. Et s’il existait une école pour que les jeunes dieux apprennent à créer des sociétés humaines ? (L’école des jeunes dieux) Comment fonctionnerait un monde où les nombres seraient à la base de tous les savoirs ? (Le mystère des chiffres) Et si une météorite tombait sur le jardin du Luxembourg ? (Fragrance) Une main gauche peut-elle faire sécession ?','On détruit pour survivre. Alors que la violence des humains, je n''en comprend pas le sens. Peut-être parce que trop nombreux et destructeurs, il s''autorégulent en se tuant entre eux. Ou peut-être parce qu''ils s''ennuient. Depuis des siècles, nous ne vous intéressons que sous forme de bûches ou de pâte à papier. Nous ne sommes pas des objets. Comme tout ce qui est sur Terre, nous vivons, nous percevons ce qui se passe dans le monde, nous souffrons et nous avons nos petites joies à nous. J''aimerais parler avec vous. Un jour, nous discuterons peut-être ensemble. Le voulez-vous?','','6.30','260','true')
 
 
-select * from Livre
-
-
 
 insert into Client(nomClient, prenomClient, loginClient, mdpClient, emailClient, dateNaissanceClient, statutClient, derniereConnexionClient)
 
@@ -111,10 +112,7 @@ values
 ('Bowie','David','MonCollonel','987654321','SecretDefense@phpLovers.com','1989-12-12',NULL,'2015-12-01T01:54:53'),
 ('Adjani','Isabelle','Zazza','01020304','jaimeLesLicornes@gmail.com','1986-07-12','cliLiti','2016-04-30T17:59:59')
 
-select * from Client
 
-DELETE * FROM Adresse;
-DBCC CHECKIDENT ('Adresse', RESEED, 1);
 
 insert into Adresse(nomAdresse, destinataireAdresse, typeVoie, numVoie, nomVoie, complement, codePostal, ville, pays)
 
@@ -136,13 +134,8 @@ values
 ('Adresse 1','Mme Irma','Ruelle','5','du SpaceCake','','75003','Paris','France'),
 ('Bureau ','Mme Irma','Place','2','de la boule de crystal','Caravane arc-en-ciel','75004','Paris','France')
 
-select * from Adresse
 
-DELETE  FROM Adresse;
-DBCC CHECKIDENT ('Adresse', RESEED, 0);
 
-DELETE  FROM Auteur;
-DBCC CHECKIDENT ('Auteur', RESEED, 0);
 
 insert into Auteur(nomAuteur, prenomAuteur, dateNaissanceAuteur, dateDecesAuteur, nationaliteAuteur, photoAuteur, bioAuteur)
 
@@ -162,12 +155,7 @@ values
 ('V.Brett','Peter','1973-02-08','','Americain','','Peter V. Brett lit de la fantasy depuis son enfance. Il apprécie également les comics et les jeux de rôle. Il étudie la littérature anglaise et l''histoire de l''art à l''université de Buffalo et obtient son diplôme en 1995. Il travaille ensuite durant plus de dix ans dans le domaine de la publication pharmaceutique. En juin 2007, la maison d''édition Del Rey Books accepte d''éditer son quatrième roman : L''Homme-Rune. En octobre 2007, le succès international du livre permet à Peter de démissionner de son travail et de se consacrer pleinement à l''écriture de romans.')
 
 
-select * from Auteur
-select * from Livre
-
-
 insert into Redaction(idAuteur, isbnLivre)
-
 values
 ('11','0375705106'),
 ('1','2253111465'),
@@ -175,12 +163,8 @@ values
 ('13','2811210210'),
 ('2','9782253083177')
 
-select * from Redaction
 
-select * from Evenement
-select * from Livre
 insert into Presentation(isbnLivre, idEvenement)
-
 values
 
 ('0375705106','1'),
@@ -197,13 +181,8 @@ values
 ('2963856479821','1'),
 ('9782253083177','1')
 
-select * from Presentation
-order by idEvenement
 
-select * from Livre
-select * from SousThematique
 insert into Genre(idSousThematique,isbnLivre)
-
 values
 
 ('Eso','0375705106'),
@@ -213,6 +192,18 @@ values
 ('SciFi','2290317152'),
 ('Eso','2963856479821')
 
+
+select * from Adresse
+select * from Auteur
+select * from Client
+select * from Editeur
+select * from Evenement
 select * from Genre
-
-
+select * from Livre
+select * from Livreur
+select * from Presentation
+select * from Redaction
+select * from SousThematique
+select * from Statut
+select * from Thematique
+select * from TVA
