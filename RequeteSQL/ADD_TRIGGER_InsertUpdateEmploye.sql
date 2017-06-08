@@ -7,21 +7,45 @@ CREATE TRIGGER InsertUpdateEmploye
 ON Auteur
 INSTEAD OF INSERT, UPDATE
 AS
-	DECLARE @debutPoste AS DATE = (SELECT debutPosteEmploye FROM inserted);
-	DECLARE @finPoste AS DATE = (SELECT finPosteEmploye FROM inserted);
+	-- STOPS IF NO ROW AFFECTED
+	IF @@rowcount = 0 RETURN;
+	
+	DECLARE @debutPoste AS DATE;
+	DECLARE @finPoste AS DATE;
 	DECLARE @hasError AS BIT = 0;
+	DECLARE insertedCursor CURSOR
+		FOR SELECT debutPosteEmploye, 
+			finPosteEmploye 
+		FROM inserted;
+	
+	-- Verification de la validiter de l'ensemble des tuples
+	OPEN insertedCursor;
+		FETCH NEXT FROM insertedCursor   
+		INTO @debutPoste, @finPoste;
 
-	IF (@finPoste != NULL)
-	BEGIN
-		IF (@debutPoste > @finPoste)
+		WHILE @@FETCH_STATUS = 0  
 		BEGIN
-			RAISERROR ('Error : Date de fin de poste supérieure à la date de debut de poste.', -- Message text.  
-				16, -- Severity.  
-				1 -- State.  
-				);
-			SET @hasError = 1;
+			
+			IF (@finPoste != NULL)
+			BEGIN
+				IF (@debutPoste > @finPoste)
+				BEGIN
+					RAISERROR ('Error : Date de fin de poste supérieure à la date de debut de poste.', -- Message text.  
+						16, -- Severity.  
+						1 -- State.  
+						);
+					SET @hasError = 1;
+					CLOSE insertedCursor;  
+					DEALLOCATE insertedCursor;
+					RETURN;
+				END
+			END
+			
+			FETCH NEXT FROM insertedCursor  
+			INTO @debutPoste, @finPoste;
 		END
-	END
+	CLOSE insertedCursor;  
+	DEALLOCATE insertedCursor;
 
 	-- N'executer le reste que s'il n'ya pas d'erreur
 	IF (@hasError = 0)
