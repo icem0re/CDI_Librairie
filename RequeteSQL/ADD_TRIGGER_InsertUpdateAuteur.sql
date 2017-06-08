@@ -12,22 +12,46 @@ CREATE TRIGGER InsertUpdateAuteur
 ON Auteur
 INSTEAD OF INSERT, UPDATE
 AS
-	DECLARE @dateNaissance AS DATE = (SELECT dateNaissanceAuteur FROM inserted);
-	DECLARE @dateDeces AS DATE = (SELECT dateDecesAuteur FROM inserted);
+	-- STOPS IF NO ROW AFFECTED
+	IF @@rowcount = 0 RETURN;
+	
 	DECLARE @hasError AS BIT = 0;
+	DECLARE @dateNaissance AS DATE;--= (SELECT dateNaissanceAuteur FROM inserted);
+	DECLARE @dateDeces AS DATE;-- = (SELECT dateDecesAuteur FROM inserted);
+	DECLARE insertedCursor CURSOR
+		FOR SELECT dateNaissanceAuteur, 
+			dateDecesAuteur 
+		FROM inserted;
+	
+	-- Verification de la validiter de l'ensemble des tuples
+	OPEN insertedCursor;
+		FETCH NEXT FROM insertedCursor   
+		INTO @dateNaissance, @dateDeces;
 
-	IF (@dateDeces != NULL)
-	BEGIN
-		IF (@dateNaissance > @dateDeces)
+		WHILE @@FETCH_STATUS = 0  
 		BEGIN
-			RAISERROR ('Error : Date de naissance supérieure à date de dècès.', -- Message text.  
-				16, -- Severity.  
-				1 -- State.  
-				);
-			SET @hasError = 1;
+			
+			IF (@dateDeces != NULL)
+			BEGIN
+				IF (@dateNaissance > @dateDeces)
+				BEGIN
+					RAISERROR ('Error : Date de naissance supérieure à date de dècès.', -- Message text.  
+						16, -- Severity.  
+						1 -- State.  
+						);
+					SET @hasError = 1;
+					CLOSE insertedCursor;  
+					DEALLOCATE insertedCursor;
+					RETURN;
+				END
+			END
+			
+			FETCH NEXT FROM insertedCursor  
+			INTO @dateNaissance, @dateDeces;
 		END
-	END
-
+	CLOSE insertedCursor;  
+	DEALLOCATE insertedCursor;
+	
 	-- N'executer le reste que s'il n'ya pas d'erreur
 	IF (@hasError = 0)
 	BEGIN
