@@ -467,3 +467,7 @@ ALTER TABLE Evenement
 ADD CONSTRAINT unCodePromo 
 UNIQUE(codePromoEvenement)
 
+/**
+* TABLE Adresse
+*/
+ALTER TABLE Adresse ADD CONSTRAINT unNomAdresseCient UNIQUE(nomAdresse, idClient);
