@@ -87,6 +87,15 @@ DROP CONSTRAINT pkTheme
 ALTER TABLE Invitation
 DROP CONSTRAINT pkInvitation
 
+ALTER TABLE Domiciliation
+DROP CONSTRAINT pkDomiciliation
 
+
+ALTER TABLE Facturation
+DROP CONSTRAINT pkFacturation
+
+
+ALTER TABLE Statut
+DROP CONSTRAINT pkStatut
 
 
