@@ -10,6 +10,12 @@ ALTER TABLE Client
 DROP CONSTRAINT dfstatutClient 
 
 /**
+* TABLE Adresse
+*/
+ALTER TABLE Adresse 
+DROP CONSTRAINT unNomAdresseCient;
+
+/**
 * TABLE Employe
 */
 ALTER TABLE Employe 
