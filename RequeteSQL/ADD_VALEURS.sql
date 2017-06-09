@@ -1,5 +1,10 @@
 use Librairie
 
+delete from LigneDeCommande
+delete from Commande
+DBCC CHECKIDENT ('Commande', RESEED, 0);
+delete from Theme
+delete from Invitation
 delete from Genre
 delete from Presentation
 delete from Redaction
@@ -21,20 +26,30 @@ delete from Thematique
 
 INSERT INTO Thematique ( nomThematique )
 
-VALUES ( 'Science-Fiction'), 
+VALUES ( 'Romans & Fiction'), 
 		('Esotérisme'),
 		('Roman Policier'),
 		('Fantastique'),
+		('Santé & bien-être'),
+		('Jeunesse'),
+		('Religion & Spiritualité'),
+		('Sciences humaine'),
+		('Sciences & techniques'),
+		('Loisir, vie pratique & société'),
 		('Heroic-fantasy')
 
 
 
 INSERT INTO SousThematique (idSousThematique,nomThematique, nomSousThematique, descriptionSousThematique)
 
-VALUES ('SciFi','Science-Fiction', 'Robotique', 'C''est une thématique sur le futur(science-fiction) concernant les robots...( si,si!)'),
-		('Eso','Esotérisme', 'Bouddhisme', ' Cette rubrique concerne tout ce qui n''est pas sciences éxactes, particulièrement chez les bouddhistes'),
-		('Fant','Fantastique','Horreur-Fantastique',' De l''horreur mélangé a du fantastique: c''est pas beau et ca n''éxiste pas!')
-
+VALUES ('SciFi','Romans & Fiction', 'Robotique', 'C''est une thématique sur le futur(science-fiction) concernant les robots...( si,si!)'),
+		('Bou','Esotérisme', 'Bouddhisme', ' Cette rubrique concerne tout ce qui n''est pas sciences éxactes, particulièrement chez les bouddhistes'),
+		('HoFa','Fantastique','Horreur-Fantastique',' De l''horreur mélangé a du fantastique: c''est pas beau et ca n''éxiste pas!'),
+		('West','Romans & Fiction','Western','Le système du western repose essentiellement sur la notion américaine de frontier, que le mot français frontière traduit imparfaitement.'),
+		('Bric','Loisir, vie pratique & société','Bricolage','Comment entretenir sa maison et prendre soin de soi sans s''empoisonner, ni polluer la planète, tout en faisant des économies ?'),
+		('Cont','Jeunesse','Contes','l y a deux pratiques du genre littéraire qu''est le conte : orale et écrite. Ces deux pratiques se différenciant par leur mode de création et de diffusion comme par leur contenu, il convient de les distinguer.'),
+		('Astr','Sciences & techniques','Astrologie','Vous voulez tout savoir du Cosmos et de l''univers connus ?'),
+		('Psyc','Sciences humaine','Psychologie','Trouvez le tueur en série qui sommeil en vous !! ')
 
 
 INSERT INTO Evenement (nomEvenement,descriptionEvenement,dateDebutEvenement,dateFinEvenement,lieuEvenement,reductionEvenement,codePromoEvenement,promoImmediatEvenement,commentaireEvenement)
@@ -75,7 +90,8 @@ INSERT INTO Editeur ( nomEditeur, logoEditeur, statutEditeur)
 
 VALUES ('Vintage Books','','EdiAct'),
 		('Le livre de poche','','EdiPause'),
-		('J''ai lu','','EdiAct')
+		('J''ai lu','','EdiAct'),
+		('Gallimard','','EdiAct')
 
 
 
@@ -185,13 +201,43 @@ values
 insert into Genre(idSousThematique,isbnLivre)
 values
 
-('Eso','0375705106'),
-('Fant','2811210210'),
+('Bou','0375705106'),
+('HoFa','2811210210'),
 ('SciFi','2253111465'),
-('Fant','9782253083177'),
+('HoFa','9782253083177'),
 ('SciFi','2290317152'),
-('Eso','2963856479821')
+('Psyc','2963856479821')
 
+insert into Invitation(idAuteur, idEvenement)
+values
+
+('1','1'),
+('10','1'),
+('8','2'),
+('2','2'),
+('13','3')
+
+insert into Theme(idSousThematique, idEvenement)
+values
+('Eso','1'),
+('Fant','2'),
+('SciFi','3')
+
+
+insert into Commande(idClient, idAdresseFacturation, idAdresseLivraison, nomLivreur, dateCommande, datePaiementCommande, datePreparationCommande, dateExpeditionCommande, dateAccuseReceptionCommande, statutCommande, ipCommande, dateAnnulationCommande)
+values
+
+('1','10','11','DHL','2017-06-02T12:00:54','2017-06-02T12:01:34','2017-06-03T08:12:00','2017-06-04T10:02:59','','comArr','192.168.0.1',''),
+('2','9','12','DPD','2017-05-29T23:25:01','2017-05-29T23:27:17','2017-06-01T09:42:01','2017-06-02T07:39:51','','comExp','192.168.0.2',''),
+('3','13','14','Chronopost','2017-06-05T04:58:32',NULL,NULL,NULL,NULL,'comArg','192.168.0.3',''),
+('4','15','16','DHL','2017-04-25T17:45:33','2017-04-25T17:46:13','2017-04-26T11:23:45','2017-04-26T18:41:22','2017-04-27T09:58:37','comLiv','192.168.0.4','')
+
+INSERT INTO LigneDeCommande (numCommande,isbnLivre,quantiteLigneDeCommande,PrixUnitaireHTLigneDeCommande,TVALigneDeCommande,reductionLigneDeCommande)
+
+VALUES('1','0375705106','2','24.99','5.5','0'),
+	('2','2253111465','1','7.50','5.5','0'),
+	('3','2290317152','1','10.9','5.5','5.0'),
+	('4','9782253083177','2','21.75','5.5',NULL)
 
 select * from Adresse
 select * from Auteur
@@ -207,3 +253,7 @@ select * from SousThematique
 select * from Statut
 select * from Thematique
 select * from TVA
+select * from Commande
+select * from Theme
+select * from Invitation
+select * from LigneDeCommande
