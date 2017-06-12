@@ -4,7 +4,7 @@
 * ne préccéde pas la date de mise en poste
 */
 
-GO;
+
 /**
  TRIGGER INSERT UPDATE ON TABLE Employe
 **/
@@ -12,6 +12,7 @@ CREATE TRIGGER InsertUpdateEmploye
 ON Employe
 INSTEAD OF INSERT, UPDATE
 AS
+BEGIN
 	-- STOPS IF NO ROW AFFECTED
 	IF @@rowcount = 0 RETURN;
 	
@@ -27,11 +28,10 @@ AS
 	OPEN insertedCursor;
 		FETCH NEXT FROM insertedCursor   
 		INTO @debutPoste, @finPoste;
-
 		WHILE @@FETCH_STATUS = 0  
 		BEGIN
 			
-			IF (@finPoste != NULL)
+			IF (@finPoste IS NOT NULL)
 			BEGIN
 				IF (@debutPoste > @finPoste)
 				BEGIN
@@ -75,7 +75,7 @@ AS
 		ELSE
 		-- Pour les INSERT
 		BEGIN
-			INSERT INTO Auteur
+			INSERT INTO Employe
 					(nomEmploye,
 						prenomEmploye,
 						loginEmploye,
@@ -84,10 +84,10 @@ AS
 						debutPosteEmploye,
 						finPosteEmploye
 					)
-				SELECT nomEmploye,
-						UPPER(prenomEmploye),
+				SELECT UPPER(nomEmploye),
 						CONCAT( UPPER(SUBSTRING(prenomEmploye,1,1)) ,
 								LOWER(SUBSTRING(prenomEmploye,2,LEN(prenomEmploye)-1)) ),
+						loginEmploye,
 						mdpEmploye,
 						emailEmploye,
 						debutPosteEmploye,
@@ -98,4 +98,4 @@ AS
 	END
 
 END
-GO;
+
