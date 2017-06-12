@@ -31,7 +31,7 @@ AS
 		WHILE @@FETCH_STATUS = 0  
 		BEGIN
 			
-			IF (@dateDeces != NULL)
+			IF (@dateDeces IS NOT NULL)
 			BEGIN
 				IF (@dateNaissance > @dateDeces)
 				BEGIN
