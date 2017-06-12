@@ -44,7 +44,7 @@ AS
 		WHILE @@FETCH_STATUS = 0  
 		BEGIN
 			
-			IF (@datePaiementCommande != NULL)
+			IF (@datePaiementCommande IS NOT NULL)
 			BEGIN
 				IF (@dateCommande > @datePaiementCommande)
 				BEGIN
@@ -59,7 +59,7 @@ AS
 				END
 			END
 			
-			IF (@datePreparationCommande != NULL)
+			IF (@datePreparationCommande IS NOT NULL)
 			BEGIN
 				IF (@dateCommande > @datePreparationCommande)
 				BEGIN
@@ -74,7 +74,7 @@ AS
 				END
 			END
 			
-			IF (@dateAnnulationCommande != NULL)
+			IF (@dateAnnulationCommande IS NOT NULL)
 			BEGIN
 				IF (@dateCommande > @dateAnnulationCommande)
 				BEGIN
@@ -89,7 +89,7 @@ AS
 				END
 			END
 			
-			IF (@dateExpeditionCommande != NULL)
+			IF (@dateExpeditionCommande IS NOT NULL)
 			BEGIN
 				IF (@dateCommande > @dateExpeditionCommande)
 				BEGIN
@@ -117,7 +117,7 @@ AS
 				END
 			END
 			
-			IF (@dateAccuseReceptionCommande != NULL)
+			IF (@dateAccuseReceptionCommande IS NOT NULL)
 			BEGIN
 				IF (@dateCommande > @dateAccuseReceptionCommande)
 				BEGIN
@@ -132,7 +132,7 @@ AS
 				END
 				
 				-- Une commande receptionner doit d'abord avoir été expedier
-				IF ((@dateExpeditionCommande = NULL) OR(@dateExpeditionCommande > @dateAccuseReceptionCommande))
+				IF ((@dateExpeditionCommande IS NULL) OR (@dateExpeditionCommande > @dateAccuseReceptionCommande))
 				BEGIN
 					RAISERROR ('Error : Commande Reçu avant d''être expedier.', -- Message text.  
 						16, -- Severity.  
