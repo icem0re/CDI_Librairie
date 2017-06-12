@@ -239,6 +239,23 @@ VALUES('1','0375705106','2','24.99','5.5','0'),
 	('3','2290317152','1','10.9','5.5','5.0'),
 	('4','9782253083177','2','21.75','5.5',NULL)
 
+DELETE FROM Employe;
+DBCC CHECKIDENT ('Employe', RESEED, 0);
+INSERT INTO Employe (
+      [nomEmploye]
+      ,[prenomEmploye]
+      ,[loginEmploye]
+      ,[mdpEmploye]
+      ,[emailEmploye]
+      ,[debutPosteEmploye]
+      ,[finPosteEmploye])
+	  VALUES ('MORICE', 'DAVID','d.morice', 'mlazhCC27uvGc7v1sfFb3XOcaU/skfIbk0vr5raYGdg=','d.morice@librairie.com', '2016-06-06', NULL),
+	  ('fabrice', 'antoine','a.fabrice', 'jIELnt+LnoskohE1tRakZqEkEJUO6wVOHDO4qlRypL4=','a.fabrice@librairie.com', '2016-06-06', '2015-02-21'),
+	  ('Le grand', 'jerome','j.le-grand', 'ibiCgyUWOVtbjFkKYQ60tzIJY0jRIo2YESyiLCaqaGE=','j.le-grand@librairie.com', '2016-06-06', '2017-01-01'),
+	  ('EINSTEIN', 'albert','e.EINSTEIN', 'wt1txt/a3fA9omSEAvyNu1uaXKsVHxbpcuHgWD/Ql3A=','e.EINSTEIN@librairie.com', '2016-06-06', NULL);
+
+
+select * from Employe
 select * from Adresse
 select * from Auteur
 select * from Client
