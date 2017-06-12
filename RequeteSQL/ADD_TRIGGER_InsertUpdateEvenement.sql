@@ -31,7 +31,7 @@ AS
 		WHILE @@FETCH_STATUS = 0  
 		BEGIN
 			
-			IF (@dateFin != NULL)
+			IF (@dateFin IS NOT NULL)
 			BEGIN
 				IF (@dateDebut > @dateFin)
 				BEGIN
