@@ -65,10 +65,17 @@ public class test {
 //        }
 //        
         
+//        
+//        for (Employe empl : Employe.getArrayListAllEmploye()){
+//            System.out.println(empl);
+//        }
         
-        for (Employe empl : Employe.getArrayListAllEmploye()){
-            System.out.println(empl);
-        }
+        
+        Statut monStat = new StatutClient();
+        monStat.setCode("123456");
+        System.out.println(((StatutClient)monStat).getCode());
+        monStat.save();
+        
         
     }
             

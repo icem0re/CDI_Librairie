@@ -5,6 +5,7 @@
  */
 package Administration;
 
+import RuntimeException.*;
 import Exception.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,58 +39,6 @@ public class Employe {
     private LocalDate debutPosteEmploye;
     private LocalDate finPosteEmploye;
     
-//    /**
-//     * getAllEmploye()
-//     * 
-//     * Creates a vector that list all employe from database.
-//     * In case of error returns a null
-//     * @return a vector
-//     * @throws ClassNotFoundException 
-//     */
-//    public static Vector getVectorAllEmploye() throws ClassNotFoundException{
-//        Vector vectorEmploye = new Vector();
-//        
-//        String query = "SELECT idEmploye ,"
-//                        + "nomEmploye ,"
-//                        + "prenomEmploye ,"
-//                        + "loginEmploye ,"
-//                        + "mdpEmploye ,"
-//                        + "emailEmploye ,"
-//                        + "debutPosteEmploye ,"
-//                        + "finPosteEmploye "
-//                    + "FROM Employe";
-//        
-//        try (
-//                Connection cnx = new SqlManager.SqlManager().GetConnection();
-//                Statement stmt = cnx.createStatement();
-//                ResultSet rs   = stmt.executeQuery(query);
-//            ){
-//            while( rs.next()) {
-//                Employe e = new Employe(rs.getInt("idEmploye"));
-//                e.setNomEmploye(rs.getString("nomEmploye"));
-//                e.setPrenomEmploye(rs.getString("prenomEmploye"));
-//                e.setLoginEmploye(rs.getString("loginEmploye"));
-//                e.setMdpEmploye(rs.getString("mdpEmploye"));
-//                e.setEmailEmploye(rs.getString("emailEmploye"));
-//                e.setDebutPosteEmploye(rs.getDate("debutPosteEmploye").toLocalDate());
-//                if (rs.getDate("finPosteEmploye") != null){
-//                    e.setFinPosteEmploye(rs.getDate("finPosteEmploye").toLocalDate());
-//                }
-//                vectorEmploye.add(e);
-//            }
-//
-//        } catch (SQLException ex) {
-//            System.err.println("Oops:SQL:" + ex.getErrorCode() + ":" + ex.getMessage());
-//            return null;
-//        } catch (InvalidEmailException ex) {
-//            System.err.println("Oops:getAllEmploye:" + ex.getMessage());
-//            return null;
-//        } catch (InvalidePasswordException ex) {
-//            System.err.println("Oops:getAllEmploye:" + ex.getMessage());
-//        }
-//        
-//        return vectorEmploye;
-//    }
     
     /**
      * getAllEmploye()
@@ -485,16 +434,16 @@ public class Employe {
         
         try (
                 Connection cnt = new SqlManager.SqlManager().GetConnection();
-                PreparedStatement pstm = cnt.prepareStatement(req, Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement pstm = cnt.prepareStatement(req);
             ){
 
             // Créer une requete
             pstm.setString(1, getLoginEmploye());
             pstm.setInt(2, getIdEmploye());
             
-            pstm.executeUpdate();
-                // Get new Id
-                ResultSet rs = pstm.getGeneratedKeys();
+            pstm.executeQuery();
+                
+            ResultSet rs = pstm.getResultSet();
                 rs.next();
                 if (rs.getInt("counter") > 0){
                     return true;
@@ -525,16 +474,16 @@ public class Employe {
         
         try (
                 Connection cnt = new SqlManager.SqlManager().GetConnection();
-                PreparedStatement pstm = cnt.prepareStatement(req, Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement pstm = cnt.prepareStatement(req);
             ){
 
             // Créer une requete
             pstm.setString(1, getEmailEmploye());
             pstm.setInt(2, getIdEmploye());
             
-            pstm.executeUpdate();
-                // Get new Id
-                ResultSet rs = pstm.getGeneratedKeys();
+            pstm.executeQuery();
+                
+            ResultSet rs = pstm.getResultSet();
                 rs.next();
                 if (rs.getInt("counter") > 0){
                     return true;
