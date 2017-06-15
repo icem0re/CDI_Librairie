@@ -85,7 +85,7 @@ public class Employe {
         } catch (InvalidEmailException ex) {
             System.err.println("Oops:getAllEmploye:" + ex.getMessage());
             return null;
-        } catch (InvalidePasswordException ex) {
+        } catch (InvalidPasswordException ex) {
             System.err.println("Oops:getAllEmploye:" + ex.getMessage());
         }
         
@@ -194,11 +194,11 @@ public class Employe {
      * Définit le mot de passe de l'employé
      * Le mot de passe ne peut être inférieure à {@code MDPMINSIZE}
      * @param mdpEmploye
-     * @throws InvalidePasswordException 
+     * @throws InvalidPasswordException 
      */
-    public void setMdpEmploye(String mdpEmploye) throws InvalidePasswordException {
+    public void setMdpEmploye(String mdpEmploye) throws InvalidPasswordException {
         if (mdpEmploye.length() < Employe.MDPMINSIZE){
-            throw new InvalidePasswordException("Mot de passe trop court [min = "+ 
+            throw new InvalidPasswordException("Mot de passe trop court [min = "+ 
                      Employe.MDPMINSIZE + "]");
         }
         this.mdpEmploye = mdpEmploye;
@@ -207,11 +207,11 @@ public class Employe {
     /**
      * Encode le mot de passe.
      * Le mot de passe ne peut être inférieure à {@code MDPMINSIZE}
-     * @throws InvalidePasswordException 
+     * @throws InvalidPasswordException 
      */
-    public void encodeMdpEmploye() throws InvalidePasswordException{
+    public void encodeMdpEmploye() throws InvalidPasswordException{
         if (mdpEmploye.length() < Employe.MDPMINSIZE){
-            throw new InvalidePasswordException("Mot de passe trop court [min = "+ 
+            throw new InvalidPasswordException("Mot de passe trop court [min = "+ 
                      Employe.MDPMINSIZE + "]");
         }
         this.mdpEmploye = SqlManager.SqlManager.encodeString(this.mdpEmploye);
@@ -327,7 +327,7 @@ public class Employe {
 //                    + "]");
 //            ex.printStackTrace();
             throw ex;
-        } catch (InvalidePasswordException ex) {
+        } catch (InvalidPasswordException ex) {
             System.err.println(ex.getMessage());
         } catch (InvalidEmailException ex) {
             System.err.println(ex.getMessage());

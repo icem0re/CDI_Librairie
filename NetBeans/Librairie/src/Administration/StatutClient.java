@@ -16,7 +16,6 @@
  */
 package Administration;
 
-import RuntimeException.InvalideCodeNameRuntimeException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,13 +32,19 @@ public class StatutClient extends Statut{
     
     public static final String CODE_PREFIX = "CLI";
     
-    public static ArrayList<Statut> getStatut(){
+    /**
+     * Querries the DB and constructs an arrayList of status 
+     * @return ArrayList<Statut>
+     * @throws SQLException 
+     */
+    public static ArrayList<Statut> getStatut() throws SQLException{
         ArrayList<Statut> listStatus = new ArrayList<>();
         
         String query = "SELECT code ,"
                         + "info "
                     + " FROM Statut "
-                + " WHERE code LIKE '" + CODE_PREFIX + "%'";
+                + " WHERE code LIKE '" + CODE_PREFIX + "%'"
+                + " ORDER BY code ASC";
         
         try (
                 Connection cnx = new SqlManager.SqlManager().GetConnection();
@@ -53,37 +58,46 @@ public class StatutClient extends Statut{
 
         } catch (SQLException ex) {
             System.err.println("Oops:SQL:" + ex.getErrorCode() + ":" + ex.getMessage());
-            return null;
+            throw ex;
         }
         
         return listStatus;
     }
 
+    /**
+     * Default constructeur
+     */
     public StatutClient() {
     }
 
-    public StatutClient(String code) {
-        super(code);
-    }
-
+    /**
+     * Constructs a client statut object
+     * @param code
+     * @param info 
+     */
     public StatutClient(String code, String info) {
         super(code, info);
     }
 
+    /**
+     * Sets the code of the statut
+     * @param code 
+     */
     @Override
     public void setCode(String code) {
-        if (!Pattern.compile("^" + StatutClient.CODE_PREFIX).matcher(code).matches()){
+        if (!Pattern.compile("^" + StatutClient.CODE_PREFIX).matcher(code).find()){
             code = StatutClient.CODE_PREFIX + code;
         }
-        if (!Pattern.compile("[a-zA-Z0-9]{4,30}").matcher(code).matches()){
-            throw new InvalideCodeNameRuntimeException("Format de code incohérent");
-        }
+        
         super.setCode(code);
     }
     
-    
-    
-    public Boolean isUsed(){
+    /**
+     * Test if the statut code is used.
+     * @return a Boolean
+     * @throws SQLException 
+     */
+    public Boolean isUsed() throws SQLException{
         
         String req = "SELECT COUNT(statutClient) AS counter "
                 + "FROM Client WHERE statutClient=?";
@@ -107,8 +121,7 @@ public class StatutClient extends Statut{
             System.err.println("Error : SQL Error ["
                     + ex.getMessage()
                     + "]");
-            ex.printStackTrace();
-            return null;
+            throw ex;
         } 
         
         return false;

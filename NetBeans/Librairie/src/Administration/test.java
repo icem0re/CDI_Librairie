@@ -70,13 +70,15 @@ public class test {
 //            System.out.println(empl);
 //        }
         
+//        
+//        Statut monStat = new StatutClient();
+//        monStat.setCode("123456");
+//        System.out.println(((StatutClient)monStat).getCode());
+//        monStat.save();
         
-        Statut monStat = new StatutClient();
-        monStat.setCode("123456");
-        System.out.println(((StatutClient)monStat).getCode());
-        monStat.save();
         
         
     }
+    
             
 }
