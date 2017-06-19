@@ -83,11 +83,9 @@ public class Thematique {
         ArrayList<Thematique> listeThematique = new ArrayList();
 
         SqlManager sql1 = null;
-        try {
+ 
             sql1 = new SqlManager();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Livre.class.getName()).log(Level.SEVERE, null, ex);
-        }
+       
 
         try (Connection cnt = sql1.GetConnection();
                 Statement stm = cnt.createStatement();) {
@@ -122,11 +120,9 @@ public class Thematique {
         ArrayList<Thematique> listeSousThematique = new ArrayList();
 
         SqlManager sql1 = null;
-        try {
+
             sql1 = new SqlManager();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Thematique.class.getName()).log(Level.SEVERE, null, ex);
-        }
+       
 
         try (Connection cnt = sql1.GetConnection();
                 Statement stm = cnt.createStatement();) {
@@ -163,11 +159,9 @@ public class Thematique {
     public void CreerThematique() {
 
         SqlManager sql1 = null;
-        try {
+
             sql1 = new SqlManager();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
-        }
+       
         String req = "insert into Thematique"
                 + "("
                 + "nomThematique"
@@ -191,11 +185,9 @@ public class Thematique {
     public void CreerSousThematique() {
 
         SqlManager sql1 = null;
-        try {
+
             sql1 = new SqlManager();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
         String req = "insert into SousThematique"
                 + "("
                 + " idSousThematique,"

@@ -40,11 +40,9 @@ public class jfBookStore extends javax.swing.JFrame {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Bibliothèque");
 
         SqlManager sql1 = null;
-        try {
+
             sql1 = new SqlManager();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Livre.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
         Connection connexion = null;
         try {
             connexion = sql1.GetConnection();
@@ -54,35 +52,35 @@ public class jfBookStore extends javax.swing.JFrame {
         }
         try {
             String req = "SELECT "
-                    + " l.isbnLivre,"
-                    + " l.titreLivre,"
-                    + " l.sousTitreLivre,"
-                    + " l.dateParutionLIvre,"
-                    + " l.resumeLIvre,"
-                    + " l.extraitLivre,"
-                    + " l.imageLivre,"
-                    + " l.prixHTLivre,"
-                    + " l.poidLivre,"
-                    + " l.affichageLivre,"
-                    + " a.nomAuteur,"
-                    + " a.prenomAuteur,"
-                    + " e.nomEditeur,"
-                    + " t.nomThematique,"
-                    + " sT.nomSousThematique "
+                    + "     l.isbnLivre,"
+                    + "     l.titreLivre,"
+                    + "     l.sousTitreLivre,"
+                    + "     l.dateParutionLIvre,"
+                    + "     l.resumeLIvre,"
+                    + "     l.extraitLivre,"
+                    + "     l.imageLivre,"
+                    + "     l.prixHTLivre,"
+                    + "     l.poidLivre,"
+                    + "     l.affichageLivre,"
+                    + "     a.nomAuteur,"
+                    + "     a.prenomAuteur,"
+                    + "     e.nomEditeur,"
+                    + "     t.nomThematique,"
+                    + "     sT.nomSousThematique "
                     + " FROM"
                     + " Livre l"
                     + " JOIN Redaction red"
-                    + " ON l.isbnLivre = red.isbnLivre"
+                    + "     ON l.isbnLivre = red.isbnLivre"
                     + " JOIN Auteur a"
-                    + " ON red.idAuteur = a.idAuteur"
+                    + "     ON red.idAuteur = a.idAuteur"
                     + " JOIN Editeur e"
-                    + " ON l.nomEditeur = e.nomEditeur"
+                    + "     ON l.nomEditeur = e.nomEditeur"
                     + " JOIN Genre g"
-                    + " ON l.isbnLivre = g.isbnLivre"
+                    + "     ON l.isbnLivre = g.isbnLivre"
                     + " JOIN SousThematique sT"
-                    + " ON g.idSousThematique = sT.idSousThematique"
+                    + "     ON g.idSousThematique = sT.idSousThematique"
                     + " JOIN Thematique t"
-                    + " ON sT.nomThematique = t.nomThematique"
+                    + "     ON sT.nomThematique = t.nomThematique"
                     + " ORDER BY nomThematique"
                     + ";";
 
@@ -202,7 +200,7 @@ public class jfBookStore extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTreeLivre);
 
         getContentPane().add(jScrollPane1);
-        jScrollPane1.setBounds(10, 11, 260, 500);
+        jScrollPane1.setBounds(10, 11, 260, 490);
 
         jtIsbn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

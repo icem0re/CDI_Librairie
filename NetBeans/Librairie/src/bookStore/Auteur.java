@@ -121,11 +121,9 @@ public class Auteur {
         ArrayList<Auteur> listeAuteur = new ArrayList();
 
         SqlManager sql1 = null;
-        try {
+
             sql1 = new SqlManager();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Auteur.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
 
         try (Connection cnt = sql1.GetConnection();
                 Statement stm = cnt.createStatement();) {
@@ -166,11 +164,9 @@ public class Auteur {
     public void CreerAuteur() {
 
         SqlManager sql1 = null;
-        try {
+
             sql1 = new SqlManager();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
-        }
+       
         String req = "insert into Auteur"
                 + "("
                 + "nomAuteur,"
@@ -210,11 +206,9 @@ public class Auteur {
     
     public void UpdateAuteur(){
         SqlManager sql1 = null;
-        try {
+
             sql1 = new SqlManager();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
         
         String req = " UPDATE Auteur "
                 + " SET "

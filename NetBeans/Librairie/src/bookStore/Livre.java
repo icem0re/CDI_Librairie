@@ -175,11 +175,9 @@ public class Livre {
         ArrayList<Livre> Biblio = new ArrayList();
 
         SqlManager sql1 = null;
-        try {
+
             sql1 = new SqlManager();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Livre.class.getName()).log(Level.SEVERE, null, ex);
-        }
+       
 
         try (Connection cnt = sql1.GetConnection();
                 Statement stm = cnt.createStatement();) {
@@ -231,11 +229,9 @@ public class Livre {
     public void CreerLivre() {
 
         SqlManager sql1 = null;
-        try {
+
             sql1 = new SqlManager();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
-        }
+       
         String req = "insert into Livre"
                 + "("
                 + "isbnLivre, "
@@ -282,11 +278,9 @@ public class Livre {
     
     public void deleteLivre(){
         SqlManager sql1 = null;
-        try {
+
             sql1 = new SqlManager();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
-        }
+       
         
         String req = " delete "
                 + " from Livre"
@@ -309,11 +303,9 @@ public class Livre {
     
     public void UpdateLivre(){
         SqlManager sql1 = null;
-        try {
+
             sql1 = new SqlManager();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
-        }
+       
         
         String req = " UPDATE Livre"
                 + " SET "

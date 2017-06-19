@@ -104,11 +104,9 @@ public class Editeur {
     public void UpdateEditeur() throws SQLException, Exception {
         
         SqlManager sql1 = null;
-        try {
+        
             sql1 = new SqlManager();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
-        }
+       
 
         String req = " UPDATE Editeur"
                 + " SET "
@@ -145,11 +143,9 @@ public class Editeur {
         ArrayList<Editeur> ListeEditeur = new ArrayList();
 
         SqlManager sql1 = null;
-        try {
+       
             sql1 = new SqlManager();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
 
         try (Connection cnt = sql1.GetConnection();
                 Statement stm = cnt.createStatement();) {
@@ -192,11 +188,9 @@ public class Editeur {
     public void CreerEditeur() {
 
         SqlManager sql1 = null;
-        try {
+ 
             sql1 = new SqlManager();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
         String req = "insert into Editeur"
                 + "("
                 + " nomEditeur,"
