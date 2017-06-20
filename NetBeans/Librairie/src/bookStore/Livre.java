@@ -40,6 +40,75 @@ public class Livre {
         editeur = new Editeur();
     }
     
+    public Livre(String isbnLivre){
+        try {
+            setIsbnLivre(isbnLivre);
+            getSqlData();
+        } catch (Exception ex) {
+            Logger.getLogger(Livre.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
+    public Livre getSqlData(){
+        
+        SqlManager sql1 = null;
+        Livre livre = new Livre();
+
+            sql1 = new SqlManager();
+       
+
+        try (Connection cnt = sql1.GetConnection();
+                Statement stm = cnt.createStatement();) {
+            
+            String req = "SELECT isbnLivre, "
+                    + " nomTVA, "
+                    + " nomEditeur, "
+                    + " titreLivre, "
+                    + " sousTitreLivre, "
+                    + " dateParutionLivre, "
+                    + " resumeLivre, "
+                    + " extraitLivre, "
+                    + " imageLivre, "
+                    + " prixHTLivre, "
+                    + " poidLivre, "
+                    + " affichageLivre "
+                    + " FROM "
+                    + " Livre"
+                    + " where isbnLivre = ?";
+            
+            ResultSet rs = stm.executeQuery(req);
+
+            while (rs.next()) {
+
+                livre.setIsbnLivre(rs.getString("isbnLivre"));
+                livre.setNomTVA(rs.getString("nomTVA"));
+                    Editeur newEditeur = new Editeur(rs.getString("nomEditeur"));
+                    newEditeur.setLogoEditeur(rs.getString("logoEditeur"));
+                    newEditeur.setStatutEditeur(rs.getString("statutEditeur"));
+                livre.setEditeur(newEditeur);
+                livre.setTitreLivre(rs.getString("titreLivre"));
+                livre.setSousTitreLivre(rs.getString("sousTitreLivre"));
+                livre.setDateParutionLivre((rs.getDate("dateParutionLivre")).toLocalDate());
+                livre.setResumeLivre(rs.getString("resumeLivre"));
+                livre.setExtraitLivre(rs.getString("extraitLivre"));
+                livre.setImageLivre(rs.getString("imageLivre"));
+                livre.setPrixHTLivre(rs.getFloat("prixHTLivre"));
+                livre.setPoidLivre(rs.getInt("poidLivre"));
+                livre.setAffichageLivre(rs.getBoolean("affichageLivre"));
+                
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Livre.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(Livre.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return livre;
+    }
+    
+    
+    
     public Livre(String nomThematique, String nomSousThematique, String nomAuteur){
         
     }
@@ -351,6 +420,8 @@ public class Livre {
             System.err.println("2) erreur sql : " + ex.getMessage());
         }
     }
+    
+      
 
     public Editeur getEditeur() {
         return editeur;

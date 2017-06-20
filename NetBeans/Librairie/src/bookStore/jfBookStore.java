@@ -12,8 +12,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -27,6 +29,7 @@ public class jfBookStore extends javax.swing.JFrame {
      * Creates new form jfBookStore
      */
     Livre livre = new Livre();
+    Thematique sousT = new Thematique();
 
     public jfBookStore() {
         initComponents();
@@ -35,7 +38,51 @@ public class jfBookStore extends javax.swing.JFrame {
     private DefaultTreeModel initModelBookStore() {
         return new DefaultTreeModel(initTreeBookStore());
     }
+    
+    private DefaultComboBoxModel initModelThematique() {
+        return new DefaultComboBoxModel(initThematique());
+    }
+    
+    private Vector initThematique() {
+        Vector v = new Vector();
+        
+        SqlManager sql1 = null;
 
+            sql1 = new SqlManager();
+        
+        Connection connexion = null;
+        try {
+            connexion = sql1.GetConnection();
+        } catch (SQLException ex) {
+            System.err.println("Oops:Connection:" + ex.getErrorCode() + ":" + ex.getMessage());
+            return v;
+        }
+        try {
+            String query = "SELECT nomSousThematique,"
+                    + " nomThematique"
+                    + " FROM SousThematique"
+                    + " ORDER BY nomSousThematique"
+                    + ";";
+            Statement stmt = connexion.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            
+            while (rs.next()) {
+
+                v.add(new Thematique(rs.getString("nomSousThematique")));
+
+            }
+
+        return v;
+    }   catch (SQLException ex) {
+            Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+        return v;
+    }
+        
+    
+    
+    
     private DefaultMutableTreeNode initTreeBookStore() {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Bibliothèque");
 
@@ -187,6 +234,7 @@ public class jfBookStore extends javax.swing.JFrame {
         jRadioButton1 = new javax.swing.JRadioButton();
         jRadioButton2 = new javax.swing.JRadioButton();
         jRadioButton3 = new javax.swing.JRadioButton();
+        jCThematique = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(null);
@@ -287,6 +335,15 @@ public class jfBookStore extends javax.swing.JFrame {
         getContentPane().add(jRadioButton3);
         jRadioButton3.setBounds(550, 20, 93, 23);
 
+        jCThematique.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jCThematique.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCThematiqueActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jCThematique);
+        jCThematique.setBounds(516, 50, 120, 20);
+
         setBounds(0, 0, 686, 557);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -316,6 +373,10 @@ public class jfBookStore extends javax.swing.JFrame {
             jtIsbn.setText("Oops");
         }
     }//GEN-LAST:event_jTreeLivreMouseClicked
+
+    private void jCThematiqueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCThematiqueActionPerformed
+       
+    }//GEN-LAST:event_jCThematiqueActionPerformed
 
     /**
      * @param args the command line arguments
@@ -355,6 +416,7 @@ public class jfBookStore extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
+    private javax.swing.JComboBox jCThematique;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
