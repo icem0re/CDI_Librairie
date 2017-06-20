@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2017 cdi415
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package Administration;
 
@@ -276,12 +287,13 @@ public class Employe {
      * à partir de la BDD.
      * 
      * Si l'id n'existe pas dans la BDD une SQLException est levé
+     * @throws IdSQLException
      * @throws SQLException 
      */
-    public void reload() throws SQLException{
+    public void reload() throws IdSQLException, SQLException{
         
         if ((this.getIdEmploye()).equals(0)){
-            throw new SQLException("ID Employe inconnue");
+            throw new IdSQLException("ID Employe inconnue");
         }
         
         String req = "SELECT idEmploye ,"
@@ -297,15 +309,13 @@ public class Employe {
         
         try (
                 Connection cnt = new SqlManager.SqlManager().GetConnection();
-                PreparedStatement pstm = cnt.prepareStatement(req, Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement pstm = cnt.prepareStatement(req);
             ){
 
             // Créer une requete
             pstm.setInt(1, getIdEmploye());
             
-            pstm.executeUpdate();
-                // Get new Id
-                ResultSet rs = pstm.getGeneratedKeys();
+            ResultSet rs = pstm.executeQuery();
                 
                 if(!rs.next()){
                     throw new SQLException("ID Employe inconnue");
@@ -361,7 +371,7 @@ public class Employe {
                         + "emailEmploye=? ,"
                         + "debutPosteEmploye=? ,"
                         + "finPosteEmploye=? "
-                    + "WHERE "
+                    + " WHERE "
                         + "idEmploye=?";
         }
         
@@ -369,7 +379,7 @@ public class Employe {
         
         // vérification de l'unicité des champs à contrainte
         if (loginExists()){throw new DuplicateConstraintSQLException("Duplicate Login");}
-        if (loginEmail()){throw new DuplicateConstraintSQLException("Duplicate Email");}
+        if (emailExists()){throw new DuplicateConstraintSQLException("Duplicate Email");}
         
         try (
                 Connection cnt = new SqlManager.SqlManager().GetConnection();
@@ -465,7 +475,7 @@ public class Employe {
      * Excludes itself for search.
      * @return Boolean
      */
-    public Boolean loginEmail(){
+    public Boolean emailExists(){
         
         String req = "SELECT COUNT(id) as counter "
                     + "FROM Employe "
