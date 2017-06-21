@@ -66,8 +66,7 @@ public class TestMain {
 //        Commande maCmd = new Commande();
 //        int monNumCommande = maCmd.getNumCommande();
         
-        GestionCommande G = new GestionCommande();
-        G.setVisible(true);
+        
         
         
 //        Commande CmdClient = Commande.getCommande(16);

@@ -24,7 +24,7 @@ public class Commande {
     private LocalDate dateAccuseReceptionCommande;
     private LocalDate dateAnnulationCommande;
     private String statutCommande;
-    private String ipCommande;  //TODO : setter & getter
+    private String ipCommande; 
     private String nomLivreur;
     private ArrayList<LigneDeCommande> LignesDeCommande;
 
@@ -171,7 +171,7 @@ public class Commande {
     }
 
 // requete SQL insertion de la commande dans la DB 
-    public void insererCommande() {
+    public void insererCommandeSQL() {
 
         String req = "INSERT INTO Commande( "
                 + "numCommande, "
@@ -308,7 +308,7 @@ public class Commande {
      * @return ArrayList<Commande>
      */
     // retourne toutes les commandes d'un client ( idclient )
-    public static ArrayList<Commande> getTouteCommande(Integer idClient) throws SQLException {
+    public static ArrayList<Commande> getTouteCommandeFromSQL(Integer idClient) throws SQLException {
 
         ArrayList<Commande> carnetCommande = new ArrayList();
 
@@ -344,7 +344,7 @@ public class Commande {
     }
 
 //insertion SQL de la ligne de commande en fonction du num commande
-    public void insererLdcCommande() {
+    public void insererLdcCommandeSQL() {
         /**
          * TODO verif numcommande existe dans la DB,
          *
@@ -379,23 +379,23 @@ public class Commande {
         }
     }
     
-    public Vector getVectorCommande(){
-        Vector v = new Vector();
-        v.add(this);
-        v.add(this.numCommande);
-        v.add(this.idAdresseFacturation);
-        v.add(this.idAdresseLivraison);
-        v.add(this.idClient);
-        v.add(this.dateCommande);
-        v.add(this.datePaiementCommande);
-        v.add(this.datePreparationCommande);
-        v.add(this.dateExpeditionCommande);
-        v.add(this.dateAccuseReceptionCommande);
-        v.add(this.dateAnnulationCommande);
-        v.add(this.statutCommande);
-        v.add(this.ipCommande);
-        v.add(this.LignesDeCommande);
-        return v;
-    }
+//    public Vector getVectorCommande(){
+//        Vector v = new Vector();
+//        v.add(this);
+//        v.add(this.numCommande);
+//        v.add(this.idAdresseFacturation);
+//        v.add(this.idAdresseLivraison);
+//        v.add(this.idClient);
+//        v.add(this.dateCommande);
+//        v.add(this.datePaiementCommande);
+//        v.add(this.datePreparationCommande);
+//        v.add(this.dateExpeditionCommande);
+//        v.add(this.dateAccuseReceptionCommande);
+//        v.add(this.dateAnnulationCommande);
+//        v.add(this.statutCommande);
+//        v.add(this.ipCommande);
+//        v.add(this.LignesDeCommande);
+//        return v;
+//    }
 
 }

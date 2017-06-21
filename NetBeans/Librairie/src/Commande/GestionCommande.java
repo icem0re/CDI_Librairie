@@ -5,19 +5,26 @@
  */
 package Commande;
 
+import Utilisateur.Client;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
 
 /**
  *
  * @author cdi409
  */
 public class GestionCommande extends javax.swing.JFrame {
+    
 
     /**
      * Creates new form GestionCommande
      */
-    public GestionCommande() {
+    public GestionCommande() {        
         initComponents();
+        jRadioButtonNumCmd.setSelected(true);
 
     }
 
@@ -57,7 +64,6 @@ public class GestionCommande extends javax.swing.JFrame {
         jLabelInfoText.setText("Afficher la commande portant le numéro:");
 
         jTextFieldInfo.setFont(new java.awt.Font("Tahoma", 2, 10)); // NOI18N
-        jTextFieldInfo.setText("numéro de commande");
         jTextFieldInfo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextFieldInfoActionPerformed(evt);
@@ -130,40 +136,46 @@ public class GestionCommande extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextFieldInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldInfoActionPerformed
-        
+
     }//GEN-LAST:event_jTextFieldInfoActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 
         if (jRadioButtonNumCmd.isSelected()) {
-            GestionNumCommande Gnc = new GestionNumCommande();
+            Commande Cmd;
+            try {
+                Cmd = new Commande(Integer.valueOf(jTextFieldInfo.getText()));
+                GestionNumCommande Gnc = new GestionNumCommande(Cmd);
             Gnc.setVisible(rootPaneCheckingEnabled);
-            Gnc.setLabel2(jTextFieldInfo.getText());
-            Gnc.affichageCommande();
+            //Gnc.affichageCommande();
+            this.setVisible(false);
+            } catch (SQLException ex) {
+                Logger.getLogger(GestionCommande.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
         }
-        if (jRadioButtonIdClient.isSelected()){
-//            GestionTouteCommande Gtc = new GestionTouteCommande();
-//            Gtc.setVisible(rootPaneCheckingEnabled);
-//            Gtc.affichageTouteCommande();
+        if (jRadioButtonIdClient.isSelected()) {
+            jRadioButtonNumCmd.setSelected(false);
+            try {
+                Client myclient = new Client(Integer.valueOf(jTextFieldInfo.getText()));
+                myclient = new Client(Integer.valueOf(jTextFieldInfo.getText()));
+                GestionTouteCommande Gtc = new GestionTouteCommande(myclient);
+                Gtc.setVisible(rootPaneCheckingEnabled);
+                this.setVisible(false);
+            } catch (SQLException ex) {
+                Logger.getLogger(GestionCommande.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-
-
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jRadioButtonNumCmdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonNumCmdActionPerformed
-//        jTextField2.setVisible(false);
-//        jTextFieldInfo.setVisible(true);
-        jLabelInfoText.setText("Afficher la commande portant le numéro :");
-        jTextFieldInfo.setText("numéro de commande");
+
+        jLabelInfoText.setText("Afficher la commande portant le numéro :");       
     }//GEN-LAST:event_jRadioButtonNumCmdActionPerformed
 
     private void jRadioButtonIdClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonIdClientActionPerformed
-//        jTextFieldInfo.setVisible(false);
-//        jTextField2.setVisible(true);
+
         jLabelInfoText.setText("Afficher toutes les commandes du client :");
-        jTextFieldInfo.setText("ID Client");
-        
     }//GEN-LAST:event_jRadioButtonIdClientActionPerformed
 
     /**

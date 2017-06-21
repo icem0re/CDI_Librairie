@@ -23,12 +23,13 @@ import javax.swing.table.DefaultTableModel;
 public class GestionTouteCommande extends javax.swing.JFrame {
 
     private Client monClient;
-    
+
     /**
      * Creates new form GestionTouteCommande
+     *
      * @param monClient
      */
-    public GestionTouteCommande(Client monClient) {
+    public GestionTouteCommande(Client monClient) throws SQLException {
         this.monClient = monClient;
         initComponents();
         jTable1.setModel(initTouteCommande());
@@ -36,54 +37,39 @@ public class GestionTouteCommande extends javax.swing.JFrame {
         jTable1.getColumnModel().getColumn(0).setMaxWidth(0);
     }
 
-    private DefaultTableModel initTouteCommande() {
-        
+    private DefaultTableModel initTouteCommande() throws SQLException {
+
         DefaultTableModel myTableModel = new DefaultTableModel();
-        
-        try {
-            
-            myTableModel.addColumn("");
-            myTableModel.addColumn("Numéro Commande");
-            myTableModel.addColumn("Adresse facturation");
-            myTableModel.addColumn("Adresse livraison");
-            myTableModel.addColumn("Date commande");
-            myTableModel.addColumn("Date paiement");
-            myTableModel.addColumn("Date préparation");
-            myTableModel.addColumn("Date expédition");
-            myTableModel.addColumn("Date réception");
-            myTableModel.addColumn("Date annulation");
-            myTableModel.addColumn("Statut");
-            
-            
-            
-            for (Commande maCmd : Commande.getTouteCommande(monClient.getIdClient())){
-                Vector monVec = new Vector();
-                monVec.add(maCmd);
-                monVec.add(maCmd.getNumCommande());
-                monVec.add(maCmd.getIdAdresseFacturation());
-                monVec.add(maCmd.getIdAdresseLivraison());
-                monVec.add(maCmd.getDateCommande());
-                monVec.add(maCmd.getDatePaiementCommande());
-                monVec.add(maCmd.getDatePreparationCommande());
-                monVec.add(maCmd.getDateExpeditionCommande());
-                monVec.add(maCmd.getDateAccuseReceptionCommande());
-                monVec.add(maCmd.getDateAnnulationCommande());
-                monVec.add(maCmd.getStatutCommande());
-                myTableModel.addRow(monVec);
-            }
-            
-            
-            
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Erreur SQL "+ 
-                    ex.getErrorCode() + 
-                    "\n[" + ex.getMessage() + "]"
-                    , "Erreur", JOptionPane.ERROR_MESSAGE);
+
+        myTableModel.addColumn("");
+        myTableModel.addColumn("Numéro Commande");
+        myTableModel.addColumn("Adresse facturation");
+        myTableModel.addColumn("Adresse livraison");
+        myTableModel.addColumn("Date commande");
+        myTableModel.addColumn("Date paiement");
+        myTableModel.addColumn("Date préparation");
+        myTableModel.addColumn("Date expédition");
+        myTableModel.addColumn("Date réception");
+        myTableModel.addColumn("Date annulation");
+        myTableModel.addColumn("Statut");
+        for (Commande maCmd : Commande.getTouteCommandeFromSQL(monClient.getIdClient())) {
+            Vector monVec = new Vector();
+            monVec.add(maCmd);
+            monVec.add(maCmd.getNumCommande());
+            monVec.add(maCmd.getIdAdresseFacturation());
+            monVec.add(maCmd.getIdAdresseLivraison());
+            monVec.add(maCmd.getDateCommande());
+            monVec.add(maCmd.getDatePaiementCommande());
+            monVec.add(maCmd.getDatePreparationCommande());
+            monVec.add(maCmd.getDateExpeditionCommande());
+            monVec.add(maCmd.getDateAccuseReceptionCommande());
+            monVec.add(maCmd.getDateAnnulationCommande());
+            monVec.add(maCmd.getStatutCommande());
+            myTableModel.addRow(monVec);
         }
-        
+
         return myTableModel;
     }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -102,6 +88,7 @@ public class GestionTouteCommande extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jButton2 = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -154,6 +141,18 @@ public class GestionTouteCommande extends javax.swing.JFrame {
         );
 
         jButton2.setText("Retour");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Modifier");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -164,6 +163,8 @@ public class GestionTouteCommande extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton1)
+                        .addGap(18, 18, 18)
                         .addComponent(jButton2))
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -174,7 +175,9 @@ public class GestionTouteCommande extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
-                .addComponent(jButton2)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton2)
+                    .addComponent(jButton1))
                 .addContainerGap())
         );
 
@@ -208,6 +211,27 @@ public class GestionTouteCommande extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+
+        int ligne = jTable1.getSelectedRow();
+        Object cel = jTable1.getValueAt(ligne, 0);
+        Commande cmd = (Commande) cel;
+        GestionNumCommande Gnc;
+        try {
+            Gnc = new GestionNumCommande(cmd);
+            Gnc.setVisible(rootPaneCheckingEnabled);
+            this.setVisible(false);
+        } catch (SQLException ex) {
+            Logger.getLogger(GestionTouteCommande.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        GestionCommande Gc = new GestionCommande();
+        Gc.setVisible(rootPaneCheckingEnabled);
+        this.setVisible(false);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -234,9 +258,7 @@ public class GestionTouteCommande extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(GestionTouteCommande.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        
-        
-        
+
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -246,14 +268,15 @@ public class GestionTouteCommande extends javax.swing.JFrame {
                     new GestionTouteCommande(monClientTest).setVisible(true);
                 } catch (SQLException ex) {
                     System.out.println(ex.getMessage());
-                            
+
                 }
-                
+
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
