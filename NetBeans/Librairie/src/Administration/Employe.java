@@ -61,15 +61,9 @@ public class Employe {
     public static ArrayList<Employe> getArrayListAllEmploye(){
         ArrayList<Employe> ArrayListEmploye = new ArrayList<>();
         
-        String query = "SELECT idEmploye ,"
-                        + "nomEmploye ,"
-                        + "prenomEmploye ,"
-                        + "loginEmploye ,"
-                        + "mdpEmploye ,"
-                        + "emailEmploye ,"
-                        + "debutPosteEmploye ,"
-                        + "finPosteEmploye "
-                    + "FROM Employe";
+        String query = "SELECT idEmploye "
+                    + "FROM Employe "
+                + " ORDER BY nomEmploye ASC, prenomEmploye ASC, debutPosteEmploye ASC";
         
         try (
                 Connection cnx = new SqlManager.SqlManager().GetConnection();
@@ -78,15 +72,6 @@ public class Employe {
             ){
             while( rs.next()) {
                 Employe e = new Employe(rs.getInt("idEmploye"));
-                e.setNomEmploye(rs.getString("nomEmploye"));
-                e.setPrenomEmploye(rs.getString("prenomEmploye"));
-                e.setLoginEmploye(rs.getString("loginEmploye"));
-                e.setMdpEmploye(rs.getString("mdpEmploye"));
-                e.setEmailEmploye(rs.getString("emailEmploye"));
-                e.setDebutPosteEmploye(rs.getDate("debutPosteEmploye").toLocalDate());
-                if (rs.getDate("finPosteEmploye") != null){
-                    e.setFinPosteEmploye(rs.getDate("finPosteEmploye").toLocalDate());
-                }
                 ArrayListEmploye.add(e);
             }
 
@@ -103,6 +88,104 @@ public class Employe {
         return ArrayListEmploye;
     }
     
+         /**
+     * Count number of employe in the DB
+     * @return Boolean
+     * @throws java.sql.SQLException
+     */
+    public static Integer countAllEmploye() throws SQLException{
+        
+        String req = "SELECT COUNT(idEmploye) as counter "
+                    + " FROM Employe ";
+        
+        try (
+                Connection cnt = new SqlManager.SqlManager().GetConnection();
+                PreparedStatement pstm = cnt.prepareStatement(req);
+            ){
+
+            // Créer une requete
+            
+            pstm.executeQuery();
+                
+            ResultSet rs = pstm.getResultSet();
+            rs.next();
+            return rs.getInt("counter");
+            
+        } catch (SQLException ex) {
+            throw ex;
+        } 
+    }
+    
+     /**
+     * Count number of active employe in the DB
+     * returns all employe with wich the date of 
+     * end of employement don't exceeds today
+     * @return Boolean
+     * @throws java.sql.SQLException
+     */
+    public static Integer countActiveEmploye() throws SQLException{
+        
+        String req = "SELECT COUNT(idEmploye) as counter "
+                    + " FROM Employe "
+                + " WHERE "
+                + " finPosteEmploye IS NULL "
+                + " OR finPosteEmploye >= ?";
+        
+        try (
+                Connection cnt = new SqlManager.SqlManager().GetConnection();
+                PreparedStatement pstm = cnt.prepareStatement(req);
+            ){
+
+            // Créer une requete
+            pstm.setDate(1, java.sql.Date.valueOf(LocalDate.now()));
+            pstm.executeQuery();
+                
+            ResultSet rs = pstm.getResultSet();
+            rs.next();
+            return rs.getInt("counter");
+            
+        } catch (SQLException ex) {
+            throw ex;
+        } 
+    }
+    
+     /**
+     * Count number of active employe in the DB
+     * returns all employe with wich the date of 
+     * end of employement don't exceeds today
+     * @param id of employe to exclude in the count
+     * @return Boolean
+     * @throws java.sql.SQLException
+     */
+    public static Integer countActiveEmploye(Integer ignoreId) throws SQLException{
+        
+        String req = "SELECT COUNT(idEmploye) as counter "
+                    + " FROM Employe "
+                + " WHERE "
+                + " idEmploye != ? AND "
+                + " finPosteEmploye IS NULL "
+                + " OR finPosteEmploye >= ?";
+        
+        try (
+                Connection cnt = new SqlManager.SqlManager().GetConnection();
+                PreparedStatement pstm = cnt.prepareStatement(req);
+            ){
+
+            // Créer une requete
+            int i = 1;
+            pstm.setInt(i++, ignoreId);
+            pstm.setDate(i++, java.sql.Date.valueOf(LocalDate.now()));
+            pstm.executeQuery();
+                
+            ResultSet rs = pstm.getResultSet();
+            rs.next();
+            return rs.getInt("counter");
+            
+        } catch (SQLException ex) {
+            throw ex;
+        } 
+    }
+    
     /**
      * Simple constructor of class
      * initialise idEmploye at 0
@@ -117,9 +200,10 @@ public class Employe {
      * allows to define the idEmploye
      * @param idEmploye 
      */
-    public Employe(Integer idEmploye){
+    public Employe(Integer idEmploye) throws SQLException{
         this();
         setIdEmploye(idEmploye);
+        reload();
     }
     
     /**
@@ -152,6 +236,9 @@ public class Employe {
      * @param nomEmploye 
      */
     public void setNomEmploye(String nomEmploye) {
+        if (nomEmploye.length() < 1 | nomEmploye.length() > 50){
+            throw new InvalidNameRuntimeException("Un nom est compris entre 1 et 50 caractères");
+        }
         this.nomEmploye = nomEmploye.trim().toUpperCase();
     }
 
@@ -172,6 +259,9 @@ public class Employe {
      */
     public void setPrenomEmploye(String prenomEmploye) {
         prenomEmploye = prenomEmploye.trim();
+        if (prenomEmploye.length() < 1 | prenomEmploye.length() > 50){
+            throw new InvalidNameRuntimeException("Un prénom est compris entre 1 et 50 caractères");
+        }
         this.prenomEmploye = prenomEmploye.substring(0, 1).toUpperCase() +
                                 prenomEmploye.substring(1).toLowerCase();
     }
@@ -332,25 +422,20 @@ public class Employe {
                 }
             
         } catch (SQLException ex) {
-//            System.err.println("Error : SQL Error ["
-//                    + ex.getMessage()
-//                    + "]");
-//            ex.printStackTrace();
             throw ex;
-        } catch (InvalidPasswordException ex) {
-            System.err.println(ex.getMessage());
-        } catch (InvalidEmailException ex) {
-            System.err.println(ex.getMessage());
+        } catch (InvalidPasswordException | InvalidEmailException ex) {
+            throw ex;
         }
     }
     
     /**
      * Savegarde les informations de l'employé dans la BDD
      * @throws DuplicateConstraintSQLException
+     * @throws Exception.InvalidEmployeException 
      * @throws SQLException 
      */
-    public void save() throws DuplicateConstraintSQLException, SQLException{
-        String req = null;
+    public void save() throws DuplicateConstraintSQLException, InvalidEmployeException, SQLException{
+        String req = "";
         if ((this.getIdEmploye()).equals(0)){
             // doesn't exists so we insert into
             req = "INSERT INTO Employe(nomEmploye ,"
@@ -378,8 +463,16 @@ public class Employe {
         //System.out.println(req);
         
         // vérification de l'unicité des champs à contrainte
-        if (loginExists()){throw new DuplicateConstraintSQLException("Duplicate Login");}
-        if (emailExists()){throw new DuplicateConstraintSQLException("Duplicate Email");}
+        if (loginExists()){throw new DuplicateConstraintSQLException("Ce login existe déjà !");}
+        if (emailExists()){throw new DuplicateConstraintSQLException("Cette adresse mail existe déjà");}
+        
+        // si l'on fournit une date de fin d'employement,
+        // vérifier qu'il n'est pas le dernier employé
+        if (getFinPosteEmploye() != null){
+            if (Employe.countActiveEmploye(getIdEmploye()) == 0){
+                throw new InvalidEmployeException("Au moins un employe doit être actif!");
+            }
+        }
         
         try (
                 Connection cnt = new SqlManager.SqlManager().GetConnection();
@@ -393,7 +486,6 @@ public class Employe {
             pstm.setString(4, getMdpEmploye());
             pstm.setString(5, getEmailEmploye());
             pstm.setDate(6, java.sql.Date.valueOf(getDebutPosteEmploye()));
-            //pstm.setObject(6, getDebutPosteEmploye(), java.sql.Types.DATE);
             if (finPosteEmploye==null){
                 pstm.setNull(7, java.sql.Types.DATE);
             } else {
@@ -434,10 +526,11 @@ public class Employe {
      * Search in BDD if employe login exists
      * Excludes itself for search.
      * @return Boolean
+     * @throws java.sql.SQLException
      */
-    public Boolean loginExists(){
+    public Boolean loginExists() throws SQLException{
         
-        String req = "SELECT COUNT(id) as counter "
+        String req = "SELECT COUNT(idEmploye) as counter "
                     + "FROM Employe "
                 + " WHERE loginEmploye = ? "
                 + " AND idEmploye != ?";
@@ -460,11 +553,7 @@ public class Employe {
                 }
             
         } catch (SQLException ex) {
-            System.err.println("Error : SQL Error ["
-                    + ex.getMessage()
-                    + "]");
-            ex.printStackTrace();
-            return true;
+            throw ex;
         } 
         
         return false;
@@ -474,10 +563,11 @@ public class Employe {
      * Search in BDD if employe email exists
      * Excludes itself for search.
      * @return Boolean
+     * @throws java.sql.SQLException
      */
-    public Boolean emailExists(){
+    public Boolean emailExists() throws SQLException{
         
-        String req = "SELECT COUNT(id) as counter "
+        String req = "SELECT COUNT(idEmploye) as counter "
                     + "FROM Employe "
                 + " WHERE emailEmploye = ? "
                 + " AND idEmploye != ?";
@@ -500,11 +590,7 @@ public class Employe {
                 }
             
         } catch (SQLException ex) {
-            System.err.println("Error : SQL Error ["
-                    + ex.getMessage()
-                    + "]");
-            ex.printStackTrace();
-            return true;
+            throw ex;
         } 
         
         return false;
@@ -512,7 +598,7 @@ public class Employe {
     
     @Override
     public String toString() {
-        return "Employe{" + "idEmploye=" + idEmploye + ", nomEmploye=" + nomEmploye + ", prenomEmploye=" + prenomEmploye + '}';
+        return nomEmploye + " " + prenomEmploye;
     }
     
     
