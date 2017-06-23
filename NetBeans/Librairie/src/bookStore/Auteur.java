@@ -11,8 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,44 +22,76 @@ import java.util.logging.Logger;
  */
 public class Auteur {
 
-//    private int idAuteur;
+    private int idAuteur;
     private String nomAuteur = "";
     private String prenomAuteur = "";
-    private Date dateNaissanceAuteur;
-    private Date dateDecesAuteur;
+    private LocalDate dateNaissanceAuteur;
+    private LocalDate dateDecesAuteur;
     private String nationaliteAuteur = "";
     private String photoAuteur = "";
     private String bioAuteur = "";
     private String statutAuteur = "";
 
-    private Livre livre;
 
     public Auteur() {
     }
 
-    public Auteur(String nomAuteur, String prenomAuteur) {
-        setNomAuteur(nomAuteur);
-        setPrenomAuteur(prenomAuteur);
+    public Auteur(int idAuteur) throws Exception {
+        setIdAuteur(idAuteur);
+        getSqlData();
     }
 
-    public Auteur(int idAuteur, String nomAuteur, String prenomAuteur, Date dateNaissanceAuteur, Date dateDecesAuteur, String nationaliteAuteur, String photoAuteur, String bioAuteur) {
-//        setIdAuteur(idAuteur);
-        setNomAuteur(nomAuteur);
-        setPrenomAuteur(prenomAuteur);
-        setDateNaissanceAuteur(dateNaissanceAuteur);
-        setDateDecesAuteur(dateDecesAuteur);
-        setNationaliteAuteur(nationaliteAuteur);
-        setPhotoAuteur(photoAuteur);
-        setBioAuteur(bioAuteur);
+    
+    public void getSqlData() throws SQLException, Exception {
+
+        String req = "SELECT "
+                    + " idAuteur, "
+                    + " nomAuteur, "
+                    + " prenomAuteur, "
+                    + " dateNaissanceAuteur, "
+                    + " dateDecesAuteur, "
+                    + " nationaliteAuteur, "
+                    + " photoAuteur, "
+                    + " bioAuteur "
+                    + " FROM "
+                    + " Auteur"
+                    + " WHERE idAuteur = ?";
+        
+        try (
+                Connection cnt = new SqlManager().GetConnection();
+                PreparedStatement stm = cnt.prepareStatement(req);
+            ) {
+            
+            stm.setInt(1, getIdAuteur());
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+
+                setIdAuteur(rs.getInt("idAuteur"));
+                setNomAuteur(rs.getString("nomAuteur"));
+                setPrenomAuteur(rs.getString("prenomAuteur"));
+                setDateNaissanceAuteur((rs.getDate("dateNaissanceAuteur")).toLocalDate());
+                setDateDecesAuteur((rs.getDate("dateDecesAuteur")).toLocalDate());
+                setNationaliteAuteur(rs.getString("nationaliteAuteur"));
+                setPhotoAuteur(rs.getString("photoAuteur"));
+                setBioAuteur(rs.getString("bioAuteur"));
+                
+            }
+            
+        } catch (SQLException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw ex;
+        }
+
     }
 
-//    public int getIdAuteur() {
-//        return idAuteur;
-//    }
-//
-//    public void setIdAuteur(int idAuteur) {
-//        this.idAuteur = idAuteur;
-//    }
+    @Override
+    public String toString() {
+        return "Auteur{" + "idAuteur=" + idAuteur + ",\n nomAuteur=" + nomAuteur + ",\n prenomAuteur=" + prenomAuteur + ",\n dateNaissanceAuteur=" + dateNaissanceAuteur + ",\n dateDecesAuteur=" + dateDecesAuteur + ",\n nationaliteAuteur=" + nationaliteAuteur + ",\n photoAuteur=" + photoAuteur + ",\n bioAuteur=" + bioAuteur + ",\n statutAuteur=" + statutAuteur + '}';
+    }
+            
+
     public String getNomAuteur() {
         return nomAuteur;
     }
@@ -76,19 +108,19 @@ public class Auteur {
         this.prenomAuteur = prenomAuteur;
     }
 
-    public Date getDateNaissanceAuteur() {
+    public LocalDate getDateNaissanceAuteur() {
         return dateNaissanceAuteur;
     }
 
-    public void setDateNaissanceAuteur(Date dateNaissanceAuteur) {
+    public void setDateNaissanceAuteur(LocalDate dateNaissanceAuteur) {
         this.dateNaissanceAuteur = dateNaissanceAuteur;
     }
 
-    public Date getDateDecesAuteur() {
+    public LocalDate getDateDecesAuteur() {
         return dateDecesAuteur;
     }
 
-    public void setDateDecesAuteur(Date dateDecesAuteur) {
+    public void setDateDecesAuteur(LocalDate dateDecesAuteur) {
         this.dateDecesAuteur = dateDecesAuteur;
     }
 
@@ -169,7 +201,7 @@ public class Auteur {
        
         String req = "insert into Auteur"
                 + "("
-                + "nomAuteur,"
+                + " nomAuteur,"
                 + " prenomAuteur,"
                 + " dateNaissanceAuteur,"
                 + " dateDecesAuteur,"
@@ -217,7 +249,7 @@ public class Auteur {
                 + " statutAuteur = ?,"
                 + " nationaliteAuteur = ?,"
                 + " bioAuteur = ?"
-                + " where nomAuteur = ? ";
+                + " where idAuteur = ? ";
         
         try (Connection cnt = sql1.GetConnection();
                 PreparedStatement pstm = cnt.prepareStatement(req);) {
@@ -231,7 +263,7 @@ public class Auteur {
             }
             pstm.setString(i++, getNationaliteAuteur());
             pstm.setString(i++, getBioAuteur());
-            pstm.setString(i++, getNomAuteur());
+            pstm.setInt(i++, getIdAuteur());
             
             int j = pstm.executeUpdate();
             System.out.println("nombre de lignes affectées : " + j);
@@ -247,5 +279,13 @@ public class Auteur {
 
     public void setStatutAuteur(String statutAuteur) {
         this.statutAuteur = statutAuteur;
+    }
+
+    public int getIdAuteur() {
+        return idAuteur;
+    }
+
+    public void setIdAuteur(int idAuteur) {
+        this.idAuteur = idAuteur;
     }
 }

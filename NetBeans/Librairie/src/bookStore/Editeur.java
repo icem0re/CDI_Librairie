@@ -14,6 +14,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -25,42 +26,56 @@ public class Editeur {
     private String logoEditeur;
     private String statutEditeur;
 
-    private Livre livre;
-
     public Editeur() {
-        try {
-            setNomEditeur("");
-        } catch (Exception ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        setLogoEditeur("");
-        try {
-            setStatutEditeur("");
-        } catch (Exception ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
-    public Editeur(String nomEditeur, String logoEditeur, String statutEditeur) {
+    public Editeur(String nomEditeur) throws Exception {
+        setNomEditeur(nomEditeur);
+        getSqlData();
+    }
+
+    public Editeur(String nomEditeur, String logoEditeur, String statutEditeur) throws Exception {
         try {
             setNomEditeur(nomEditeur);
-        } catch (Exception ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        setLogoEditeur(logoEditeur);
-        try {
+            setLogoEditeur(logoEditeur);
             setStatutEditeur(statutEditeur);
         } catch (Exception ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
+            throw ex;
         }
     }
+    
+    public void getSqlData() throws SQLException, Exception {
 
-    public Editeur(String nomEditeur) {
-        try {
-            setNomEditeur(nomEditeur);
+        String req = "SELECT "
+                    + " nomEditeur, "
+                    + " logoEditeur, "
+                    + " statutEditeur "
+                    + " FROM "
+                    + " Editeur"
+                    + " WHERE nomEditeur = ?";
+        
+        try (
+                Connection cnt = new SqlManager().GetConnection();
+                PreparedStatement stm = cnt.prepareStatement(req);
+            ) {
+            
+            stm.setString(1, getNomEditeur());
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+
+                setNomEditeur(rs.getString("nomEditeur"));
+                setLogoEditeur(rs.getString("logoEditeur"));
+                setStatutEditeur(rs.getString("statutEditeur"));
+                
+            }
+            
+        } catch (SQLException ex) {
+            throw ex;
         } catch (Exception ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
+            throw ex;
         }
+
     }
 
     public String getNomEditeur() {
@@ -92,13 +107,49 @@ public class Editeur {
     public void setStatutEditeur(String statutEditeur) throws Exception {
         if (statutEditeur.length() > 30) {
             throw new Exception("30 caracteres maximum");
-        } else {
+        }
+        else {
             this.statutEditeur = statutEditeur;
         }
     }
     
     public void deleteStatutEditeur(){
         this.statutEditeur = null;
+    }
+    
+    public void deleteEditeur() throws SQLException, Exception {
+        
+        SqlManager sql1 = null;
+        
+            sql1 = new SqlManager();
+       
+
+        String req = " UPDATE Editeur"
+                + " SET "
+                + " statutEditeur = EdiIna"
+                + " from Editeur "
+                + " where nomEditeur = ?";
+
+        try (Connection cnt2 = sql1.GetConnection();
+                PreparedStatement pstm2 = cnt2.prepareStatement(req);) {
+            int i = 1;
+            Editeur editeur = new Editeur();
+            editeur.deleteStatutEditeur();
+            if (editeur.getStatutEditeur() == null){
+                pstm2.setString(i++,""+ java.sql.Types.NULL);
+            } else {
+                pstm2.setString(i++, editeur.getStatutEditeur());
+            }
+            pstm2.setString(i++, getNomEditeur());
+            
+            
+            
+            int j = pstm2.executeUpdate();
+            System.out.println("nombre de lignes affectées : " + j);
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public void UpdateEditeur() throws SQLException, Exception {
@@ -134,7 +185,7 @@ public class Editeur {
             System.out.println("nombre de lignes affectées : " + j);
 
         } catch (SQLException ex) {
-            System.err.println("2) erreur sql : " + ex.getMessage());
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -142,54 +193,77 @@ public class Editeur {
 
         ArrayList<Editeur> ListeEditeur = new ArrayList();
 
-        SqlManager sql1 = null;
-       
-            sql1 = new SqlManager();
+        SqlManager sql1 = new SqlManager();
         
 
         try (Connection cnt = sql1.GetConnection();
                 Statement stm = cnt.createStatement();) {
 
-            String req = "select e.nomEditeur,"
-                    + " l.titreLivre,"
-                    + " e.statutEditeur,"
-                    + " e.logoEditeur "
-                    + " from EDITEUR e"
-                    + " join Livre l"
-                    + " on e.nomEditeur = l.nomEditeur"
+            String req = "select nomEditeur,"
+                    + " logoEditeur,"
+                    + " statutEditeur "
+                    + " FROM Editeur "
                     + " order by nomEditeur";
 
             ResultSet rs = stm.executeQuery(req);
 
             while (rs.next()) {
-                Editeur editeur = new Editeur(rs.getString("nomEditeur"));
-
+                Editeur editeur = new Editeur();
+                editeur.setNomEditeur(rs.getString("nomEditeur"));
                 editeur.setLogoEditeur(rs.getString("logoEditeur"));
-                if (rs.getString("statutEditeur")!=null){
-                    editeur.setStatutEditeur(rs.getString("statutEditeur"));
-                }
-                
-                Livre newlivre = new Livre();
-                newlivre.setTitreLivre(rs.getString("titreLivre"));
-                newlivre.setEditeur(editeur);
+                editeur.setStatutEditeur(rs.getString("statutEditeur"));
                 
                 ListeEditeur.add(editeur);
 
             }
 
         } catch (SQLException ex) {
-            System.err.println("2) erreur sql : " + ex.getMessage());
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
             Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ListeEditeur;
     }
 
+    public static ArrayList<Editeur> AffichageStatutEditeur() {
+
+        ArrayList<Editeur> ListeEditeur = new ArrayList();
+
+        SqlManager sql1 = new SqlManager();
+        
+
+        try (Connection cnt = sql1.GetConnection();
+                Statement stm = cnt.createStatement();) {
+
+            String req = "select nomEditeur,"
+                    + " logoEditeur,"
+                    + " statutEditeur "
+                    + " FROM Editeur "
+                    + " order by statutEditeur";
+
+            ResultSet rs = stm.executeQuery(req);
+
+            while (rs.next()) {
+                Editeur editeur = new Editeur();
+                editeur.setNomEditeur(rs.getString("nomEditeur"));
+                editeur.setLogoEditeur(rs.getString("logoEditeur"));
+                editeur.setStatutEditeur(rs.getString("statutEditeur"));
+                
+                ListeEditeur.add(editeur);
+
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ListeEditeur;
+    }
+    
     public void CreerEditeur() {
 
-        SqlManager sql1 = null;
- 
-            sql1 = new SqlManager();
+        SqlManager sql1 = new SqlManager();
         
         String req = "insert into Editeur"
                 + "("
@@ -210,24 +284,14 @@ public class Editeur {
             System.out.println("nombre de lignes affectées : " + i);
 
         } catch (SQLException ex) {
-            System.err.println("2) erreur sql : " + ex.getMessage());
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
         }
 
     }
 
-    public Livre getLivre() {
-        return livre;
-    }
-
-    public void setLivre(Livre livre) {
-        this.livre = livre;
-    }
-
     @Override
     public String toString() {
-        return "Editeur{" + "nomEditeur=" + nomEditeur + ", logoEditeur=" + logoEditeur + ", statutEditeur=" + statutEditeur + ", livre=" + livre + '}';
+        return nomEditeur ;
     }
 
-    
-    
 }

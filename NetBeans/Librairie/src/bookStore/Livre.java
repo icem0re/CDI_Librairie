@@ -15,6 +15,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  *
@@ -35,88 +37,218 @@ public class Livre {
     private boolean affichageLivre;
 
     private Editeur editeur;
+    
+    private ArrayList<Auteur> mesAuteur;
+    private ArrayList<Thematique> mesThematique;
+    private DefaultMutableTreeNode root = new DefaultMutableTreeNode("Bibliothèque");
 
     public Livre() {
         editeur = new Editeur();
+        mesAuteur = new ArrayList();
+        mesThematique = new ArrayList();
+    }
+
+    public Livre(String isbnLivre) throws SQLException, Exception{
+        setIsbnLivre(isbnLivre);
+        getSqlData();  
     }
     
-    public Livre(String isbnLivre){
-        try {
-            setIsbnLivre(isbnLivre);
-            getSqlData();
-        } catch (Exception ex) {
-            Logger.getLogger(Livre.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public Livre(String titreLivre, String isbnLivre) throws Exception{
+        setTitreLivre(titreLivre);
+        setIsbnLivre(isbnLivre);
+        selectUnLivre();
         
     }
     
-    public Livre getSqlData(){
-        
-        SqlManager sql1 = null;
-        Livre livre = new Livre();
+    public void getSqlData() throws SQLException, Exception {
 
-            sql1 = new SqlManager();
-       
-
-        try (Connection cnt = sql1.GetConnection();
-                Statement stm = cnt.createStatement();) {
-            
-            String req = "SELECT isbnLivre, "
-                    + " nomTVA, "
-                    + " nomEditeur, "
-                    + " titreLivre, "
-                    + " sousTitreLivre, "
-                    + " dateParutionLivre, "
-                    + " resumeLivre, "
-                    + " extraitLivre, "
-                    + " imageLivre, "
-                    + " prixHTLivre, "
-                    + " poidLivre, "
-                    + " affichageLivre "
+        String req = " SELECT liv.isbnLivre, "
+                    + " liv.nomTVA, "
+                    + " liv.nomEditeur, "
+                    + " liv.titreLivre, "
+                    + " liv.sousTitreLivre, "
+                    + " liv.dateParutionLivre, "
+                    + " liv.resumeLivre, "
+                    + " liv.extraitLivre, "
+                    + " liv.imageLivre, "
+                    + " liv.prixHTLivre, "
+                    + " liv.poidLivre, "
+                    + " liv.affichageLivre,"
+                    + " red.idAuteur,"
+                    + " gen.idSousThematique"
                     + " FROM "
-                    + " Livre"
-                    + " where isbnLivre = ?";
+                    + " Livre liv"
+                    + " JOIN Redaction red"
+                    + " ON liv.isbnLivre = red.isbnLivre"
+                    + " JOIN Genre gen"
+                    + " ON liv.isbnLivre = gen.isbnLivre"
+                    + " WHERE liv.isbnLivre = ?";
+        
+        try (
+                Connection cnt = new SqlManager().GetConnection();
+                PreparedStatement stm = cnt.prepareStatement(req);
+
+            ) {
             
-            ResultSet rs = stm.executeQuery(req);
+            stm.setString(1, getIsbnLivre());
+            ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
+                
 
-                livre.setIsbnLivre(rs.getString("isbnLivre"));
-                livre.setNomTVA(rs.getString("nomTVA"));
+                setIsbnLivre(rs.getString("isbnLivre"));
+                setNomTVA(rs.getString("nomTVA"));
                     Editeur newEditeur = new Editeur(rs.getString("nomEditeur"));
-                    newEditeur.setLogoEditeur(rs.getString("logoEditeur"));
-                    newEditeur.setStatutEditeur(rs.getString("statutEditeur"));
-                livre.setEditeur(newEditeur);
-                livre.setTitreLivre(rs.getString("titreLivre"));
-                livre.setSousTitreLivre(rs.getString("sousTitreLivre"));
-                livre.setDateParutionLivre((rs.getDate("dateParutionLivre")).toLocalDate());
-                livre.setResumeLivre(rs.getString("resumeLivre"));
-                livre.setExtraitLivre(rs.getString("extraitLivre"));
-                livre.setImageLivre(rs.getString("imageLivre"));
-                livre.setPrixHTLivre(rs.getFloat("prixHTLivre"));
-                livre.setPoidLivre(rs.getInt("poidLivre"));
-                livre.setAffichageLivre(rs.getBoolean("affichageLivre"));
+                    newEditeur.getSqlData();
+                setEditeur(newEditeur);
+                    Auteur newAuteur = new Auteur (rs.getInt("idAuteur"));
+                    mesAuteur.add(newAuteur);
+                   
+                    Thematique newThematique = new Thematique(rs.getString("idSousThematique"));;
+                    mesThematique.add(newThematique);
+                setTitreLivre(rs.getString("titreLivre"));
+                setSousTitreLivre(rs.getString("sousTitreLivre"));
+                setDateParutionLivre((rs.getDate("dateParutionLivre")).toLocalDate());
+                setResumeLivre(rs.getString("resumeLivre"));
+                setExtraitLivre(rs.getString("extraitLivre"));
+                setImageLivre(rs.getString("imageLivre"));
+                setPrixHTLivre(rs.getFloat("prixHTLivre"));
+                setPoidLivre(rs.getInt("poidLivre"));
+                setAffichageLivre(rs.getBoolean("affichageLivre"));
                 
             }
             
+            
         } catch (SQLException ex) {
-            Logger.getLogger(Livre.class.getName()).log(Level.SEVERE, null, ex);
+            throw ex;
         } catch (Exception ex) {
-            Logger.getLogger(Livre.class.getName()).log(Level.SEVERE, null, ex);
+            throw ex;
         }
-        return livre;
-    }
-    
-    
-    
-    public Livre(String nomThematique, String nomSousThematique, String nomAuteur){
         
     }
+    
+    public void UpdateLivre2() throws SQLException, Exception {
+        
+        SqlManager sql1 = null;
+        
+            sql1 = new SqlManager();
+       
 
+        String req = " UPDATE Livre"
+                + " SET "
+                + " nomTVA = ?,"
+                + " nomEditeur = ?,"
+                + " dateParutionLivre = ?,"
+                + " titreLivre = ?, "
+                + " sousTitreLivre = ?, "
+                + " resumeLivre = ?, "
+                + " extraitLivre = ?, "
+                + " imageLivre = ?, "
+                + " prixHTLivre = ?, "
+                + " poidLivre = ?, "
+                + " affichageLivre = ? "
+                + " FROM Livre "
+                + " WHERE isbnLivre = ?";
+
+        try (Connection cnt2 = sql1.GetConnection();
+                PreparedStatement pstm2 = cnt2.prepareStatement(req);) {
+            java.sql.Date d;
+            
+            int i = 1;
+            pstm2.setString(i++, getNomTVA());
+            pstm2.setString(i++, getEditeur().getNomEditeur());
+            pstm2.setDate(i++, d = java.sql.Date.valueOf(this.getDateParutionLivre()));
+            pstm2.setString(i++, getTitreLivre());
+            pstm2.setString(i++, getSousTitreLivre());
+            pstm2.setString(i++, getResumeLivre());
+            pstm2.setString(i++, getExtraitLivre());
+            pstm2.setString(i++, getImageLivre());
+            pstm2.setFloat(i++, getPrixHTLivre());
+            pstm2.setInt(i++, getPoidLivre());
+            pstm2.setBoolean(i++, isAffichageLivre());
+            pstm2.setString(i++, getIsbnLivre());
+            
+            int j = pstm2.executeUpdate();
+            System.out.println("nombre de lignes affectées : " + j);
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    public void selectUnLivre() throws SQLException, Exception {
+
+        String req = "SELECT liv.isbnLivre, "
+                    + " liv.nomTVA, "
+                    + " liv.nomEditeur, "
+                    + " liv.titreLivre, "
+                    + " liv.sousTitreLivre, "
+                    + " liv.dateParutionLivre, "
+                    + " liv.resumeLivre, "
+                    + " liv.extraitLivre, "
+                    + " liv.imageLivre, "
+                    + " liv.prixHTLivre, "
+                    + " liv.poidLivre, "
+                    + " liv.affichageLivre,"
+                    + " red.idAuteur,"
+                    + " gen.idSousThematique"
+                    + " FROM "
+                    + " Livre liv"
+                    + " JOIN Redaction red"
+                    + " ON liv.isbnLivre = red.isbnLivre"
+                    + " JOIN Genre gen"
+                    + " ON liv.isbnLivre = gen.isbnLivre"
+                    + " WHERE liv.isbnLivre = ?";
+        
+        try (
+                Connection cnt = new SqlManager().GetConnection();
+                PreparedStatement stm = cnt.prepareStatement(req);
+
+            ) {
+            
+            stm.setString(1, getIsbnLivre());
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                
+
+                setIsbnLivre(rs.getString("isbnLivre"));
+                setNomTVA(rs.getString("nomTVA"));
+                    Editeur newEditeur = new Editeur(rs.getString("nomEditeur"));
+                    newEditeur.getSqlData();
+                setEditeur(newEditeur);
+                setTitreLivre(rs.getString("titreLivre"));
+                setSousTitreLivre(rs.getString("sousTitreLivre"));
+                setDateParutionLivre((rs.getDate("dateParutionLivre")).toLocalDate());
+                setResumeLivre(rs.getString("resumeLivre"));
+                setExtraitLivre(rs.getString("extraitLivre"));
+                setImageLivre(rs.getString("imageLivre"));
+                setPrixHTLivre(rs.getFloat("prixHTLivre"));
+                setPoidLivre(rs.getInt("poidLivre"));
+                setAffichageLivre(rs.getBoolean("affichageLivre"));
+                
+            }
+            
+            
+        } catch (SQLException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw ex;
+        }
+        
+    }
+    
     @Override
     public String toString() {
-        return "Livre{" + "isbnLivre=" + isbnLivre + ", titreLivre=" + titreLivre + ", sousTitreLivre=" + sousTitreLivre + ", dateParutionLivre=" + dateParutionLivre + ", resumeLivre=" + resumeLivre + ", extraitLivre=" + extraitLivre + ", imageLivre=" + imageLivre + ", prixHTLivre=" + prixHTLivre + ", nomTVA=" + nomTVA + ", poidLivre=" + poidLivre + ", affichageLivre=" + affichageLivre + ", editeur=" + editeur + '}';
+        //return "Livre{" + "isbnLivre=" + isbnLivre + ",\n titreLivre=" + titreLivre + ",\n sousTitreLivre=" + sousTitreLivre + ",\n dateParutionLivre=" + dateParutionLivre + ",\n resumeLivre=" + resumeLivre + ",\n extraitLivre=" + extraitLivre + ",\n imageLivre=" + imageLivre + ",\n prixHTLivre=" + prixHTLivre + ",\n nomTVA=" + nomTVA + ",\n poidLivre=" + poidLivre + ",\n affichageLivre=" + affichageLivre + ",\n editeur=" + editeur + ",\n mesAuteur=" + mesAuteur + ",\n mesThematique=" + mesThematique + '}';
+        return "TITRE : " + getTitreLivre() + "\t ISBN : " + getIsbnLivre();
     }
+
+    public String toString2() {
+        return "Livre{" + "isbnLivre=" + isbnLivre + ",\n titreLivre=" + titreLivre + ",\n sousTitreLivre=" + sousTitreLivre + ",\n dateParutionLivre=" + dateParutionLivre + ",\n resumeLivre=" + resumeLivre + ",\n extraitLivre=" + extraitLivre + ",\n imageLivre=" + imageLivre + ",\n prixHTLivre=" + prixHTLivre + ",\n nomTVA=" + nomTVA + ",\n poidLivre=" + poidLivre + ",\n affichageLivre=" + affichageLivre + ",\n editeur=" + editeur + ",\n mesAuteur=" + mesAuteur + ",\n mesThematique=" + mesThematique + '}';
+        //return "TITRE : " + getTitreLivre() + "\t ISBN : " + getIsbnLivre();
+    }
+
 
     public String getIsbnLivre() {
         return isbnLivre;
@@ -155,9 +287,9 @@ public class Livre {
             throw new Exception("Longueur titre comprise entre 1 et 50 characteres !!!");
         } else if (titreLivre.length() > 50) {
             throw new Exception("Longueur titre comprise entre 1 et 50 characteres !!!");
-        } else {
-            this.titreLivre = titreLivre;
         }
+        this.titreLivre = titreLivre;
+        
     }
 
     public String getSousTitreLivre() {
@@ -165,14 +297,10 @@ public class Livre {
     }
 
     public void setSousTitreLivre(String sousTitreLivre) throws Exception {
-        if (sousTitreLivre.length() < 1) {
+        if (sousTitreLivre.length() > 50) {
             throw new Exception("Longueur sous-titre comprise entre 1 et 50 characteres !!!");
-        } else if (sousTitreLivre.length() > 50) {
-            throw new Exception("Longueur sous-titre comprise entre 1 et 50 characteres !!!");
-        } else {
-            this.sousTitreLivre = sousTitreLivre;
         }
-
+        this.sousTitreLivre = sousTitreLivre;
     }
 
     public LocalDate getDateParutionLivre() {
@@ -214,9 +342,9 @@ public class Livre {
     public void setPrixHTLivre(float prixHTLivre) throws Exception {
         if (prixHTLivre < 0) {
             throw new Exception("Le prix ne peut etre négatif");
-        } else {
-            this.prixHTLivre = prixHTLivre;
         }
+        this.prixHTLivre = prixHTLivre;
+        
     }
 
     public int getPoidLivre() {
@@ -226,9 +354,9 @@ public class Livre {
     public void setPoidLivre(int poidLivre) throws Exception {
         if (poidLivre < 0) {
             throw new Exception("Le poid du livre ne peut etre negatif");
-        } else {
-            this.poidLivre = poidLivre;
         }
+        this.poidLivre = poidLivre;
+        
     }
 
     public boolean isAffichageLivre() {
@@ -243,10 +371,7 @@ public class Livre {
 
         ArrayList<Livre> Biblio = new ArrayList();
 
-        SqlManager sql1 = null;
-
-            sql1 = new SqlManager();
-       
+        SqlManager sql1 = new SqlManager();
 
         try (Connection cnt = sql1.GetConnection();
                 Statement stm = cnt.createStatement();) {
@@ -257,7 +382,8 @@ public class Livre {
                     + " e.logoEditeur, "
                     + " e.statutEditeur, "
                     + " a.nomAuteur, "
-                    + " a.prenomAuteur"
+                    + " a.prenomAuteur,"
+                    + " a.idAuteur"
                     + " from LIVRE l "
                     + " join Editeur e "
                     + " on l.nomEditeur = e.nomEditeur"
@@ -271,7 +397,9 @@ public class Livre {
             while (rs.next()) {
                 Livre livre = new Livre();
 
-                Auteur auteur = new Auteur(rs.getString("nomAuteur"), rs.getString("prenomAuteur"));
+                Auteur auteur = new Auteur(rs.getInt("idAuteur"));
+                auteur.setPrenomAuteur(rs.getString("prenomAuteur"));
+                auteur.setNomAuteur(rs.getString("nomAuteur"));
                 livre.setIsbnLivre(rs.getString("isbnLivre"));
                 Editeur newEditeur = new Editeur(rs.getString("nomEditeur"));
                 newEditeur.setLogoEditeur(rs.getString("logoEditeur"));
@@ -279,7 +407,6 @@ public class Livre {
                 livre.setEditeur(newEditeur);
                 livre.setTitreLivre(rs.getString("titreLivre"));
 
-                System.out.println("ISBN : " + livre.getIsbnLivre() + "\t Titre : " + livre.getTitreLivre() + "\t Editeur : " + livre.getEditeur().getNomEditeur() + "\t Auteur : " + auteur.getNomAuteur() + " " + auteur.getPrenomAuteur());
 
                 Biblio.add(livre);
 
@@ -288,13 +415,140 @@ public class Livre {
                 Biblio.get(i).toString();
             }
         } catch (SQLException ex) {
-            System.err.println("2) erreur sql : " + ex.getMessage());
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
         } catch (Exception ex) {
             Logger.getLogger(Livre.class.getName()).log(Level.SEVERE, null, ex);
         }
         return Biblio;
     }
+   
+    public static ArrayList<Livre> searchLivres(String byISBN, 
+            String byTitre, 
+            String bySousTitre, 
+            String byEditeur, 
+            String byNomAuteur, 
+            String byPrenomAuteur) throws SQLException, Exception {
 
+        ArrayList<Livre> Biblio = new ArrayList();
+        Boolean hasValidSearch = false;
+        
+        String req = "SELECT "
+                    + "     l.isbnLivre, "
+                    + "     l.titreLivre, "
+                    + "     e.nomEditeur, "
+                    + "     e.logoEditeur, "
+                    + "     e.statutEditeur "
+                    + " FROM "
+                    + "     LIVRE l "
+                    + " JOIN Editeur e "
+                    + "     ON l.nomEditeur = e.nomEditeur "
+                    + " JOIN Redaction red "
+                    + "     ON l.isbnLivre = red.isbnLivre "
+                    + " JOIN Auteur a "
+                    + "     ON red.idAuteur = a.idAuteur ";
+        
+        if (byNomAuteur != null){
+            byNomAuteur = byNomAuteur.replaceAll("\\*", "%");
+            req = req + " AND a.nomAuteur like ? ";
+            hasValidSearch = true;
+        }
+        if (byPrenomAuteur != null){
+            byPrenomAuteur = byPrenomAuteur.replaceAll("\\*", "%");
+            req = req + " AND a.prenomAuteur like ? ";
+            hasValidSearch = true;
+        }
+        
+        req = req   + " WHERE ";
+        
+        if (byISBN != null){
+            byISBN = byISBN.replaceAll("\\*", "%");
+            req = req + " l.isbnLivre like ? AND ";
+            hasValidSearch = true;
+        }
+        if (byTitre != null){
+            byTitre = byTitre.replaceAll("\\*", "%");
+            req = req + " l.titreLivre like ? AND ";
+            hasValidSearch = true;
+        }
+        if (bySousTitre != null){
+            bySousTitre = bySousTitre.replaceAll("\\*", "%");
+            req = req + " l.sousTitreLivre like ? AND ";
+            hasValidSearch = true;
+        }
+        if (byEditeur != null){
+            byEditeur = byEditeur.replaceAll("\\*", "%");
+            req = req + " l.nomEditeur like ? AND ";
+            hasValidSearch = true;
+        }
+        
+        if (!hasValidSearch){
+            throw new SQLException("Merci de fournir moins un champs de recherche");
+        }
+        
+        // Nettoyage fin de requete
+        if (("AND ").equals(req.substring(req.length()-4))){
+            req = req.substring(0, req.length()-("AND ").length());
+        } else {
+            req = req.substring(0, req.length()-(" WHERE ").length());
+        }
+        //System.out.println(req);
+        
+        try (Connection cnt = new SqlManager().GetConnection();
+                PreparedStatement stm = cnt.prepareStatement(req);
+            ) 
+        {
+
+            int i = 1;
+            if (byNomAuteur != null) {
+                stm.setString(i++, byNomAuteur);
+            }
+            if (byPrenomAuteur != null) {
+                stm.setString(i++, byPrenomAuteur);
+            }
+            if (byISBN != null) {
+                stm.setString(i++, byISBN);
+            }
+            if (byTitre != null) {
+                stm.setString(i++, byTitre);
+            }
+            if (bySousTitre != null) {
+                stm.setString(i++, bySousTitre);
+            }
+            if (byEditeur != null) {
+                stm.setString(i++, byEditeur);
+            }
+
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                Livre livre = new Livre();
+
+                //Auteur auteur = new Auteur(rs.getInt("idAuteur"));
+                livre.setIsbnLivre(rs.getString("isbnLivre"));
+                Editeur newEditeur = new Editeur(rs.getString("nomEditeur"));
+                newEditeur.setLogoEditeur(rs.getString("logoEditeur"));
+                newEditeur.setStatutEditeur(rs.getString("statutEditeur"));
+                livre.setEditeur(newEditeur);
+                livre.setTitreLivre(rs.getString("titreLivre"));
+
+                Biblio.add(livre);
+
+            }
+        } catch (SQLException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw ex;
+        }
+        return Biblio;
+    }
+
+    public static void main(String[] args) throws SQLException, Exception {
+        for (Livre book : Livre.searchLivres(null, null, null, null, "a*", null)){
+            System.out.println(book);
+        }
+    }
+    
     public void CreerLivre() {
 
         SqlManager sql1 = null;
@@ -340,7 +594,7 @@ public class Livre {
             System.out.println("nombre de lignes affectées : " + i);
 
         } catch (SQLException ex) {
-            System.err.println("2) erreur sql : " + ex.getMessage());
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
         }
 
     }
@@ -366,15 +620,12 @@ public class Livre {
             System.out.println("nombre de lignes affectées : " + j);
 
         } catch (SQLException ex) {
-            System.err.println("2) erreur sql : " + ex.getMessage());
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
         }
     }
     
     public void UpdateLivre(){
-        SqlManager sql1 = null;
-
-            sql1 = new SqlManager();
-       
+        SqlManager sql1 = new SqlManager();   
         
         String req = " UPDATE Livre"
                 + " SET "
@@ -417,11 +668,9 @@ public class Livre {
             System.out.println("nombre de lignes affectées : " + j);
 
         } catch (SQLException ex) {
-            System.err.println("2) erreur sql : " + ex.getMessage());
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
         }
-    }
-    
-      
+    }   
 
     public Editeur getEditeur() {
         return editeur;
@@ -438,4 +687,21 @@ public class Livre {
     public void setNomTVA(String nomTVA) {
         this.nomTVA = nomTVA;
     }
+
+    public ArrayList<Auteur> getMesAuteur() {
+        return mesAuteur;
+    }
+
+    public void setMesAuteur(ArrayList<Auteur> mesAuteur) {
+        this.mesAuteur = mesAuteur;
+    }
+
+    public ArrayList<Thematique> getMesThematique() {
+        return mesThematique;
+    }
+
+    public void setMesThematique(ArrayList<Thematique> mesThematique) {
+        this.mesThematique = mesThematique;
+    }
+
 }

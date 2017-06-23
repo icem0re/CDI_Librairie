@@ -6,13 +6,6 @@
 package bookStore;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.util.converter.LocalDateStringConverter;
 
 /**
  *
@@ -20,12 +13,12 @@ import javafx.util.converter.LocalDateStringConverter;
  */
 public class Test {
     public static void main(String[] args) throws ClassNotFoundException, SQLException, Exception {
-//        Livre livre1 = new Livre();
-        Editeur ed1 = new Editeur("Gallimard");
-        ed1.setStatutEditeur("EdiPause");
-//        Auteur au1 = new Auteur();
-//        Thematique tm1 = new Thematique();
-        try {
+////        Livre livre1 = new Livre();
+//        Editeur ed1 = new Editeur("Gallimard");
+//        ed1.setStatutEditeur("EdiPause");
+////        Auteur au1 = new Auteur();
+////        Thematique tm1 = new Thematique();
+//        try {
             ////        try {
 //            livre1.setIsbnLivre( "012345678X"); livre1.setNomTVA("TVA5%");
 //            livre1.setEditeur(new Editeur("Gallimard"));
@@ -64,15 +57,15 @@ public class Test {
 //        System.out.println("--------------");
 //        System.out.println("--------------");
 //        System.out.println("--------------");
-//        tm1.AffichageThematique();
-//        System.out.println("--------------");
-//        System.out.println("--------------");
-//        System.out.println("--------------");
-//        tm1.AffichageSousThematique();
-        } catch (Exception ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+////        tm1.AffichageThematique();
+////        System.out.println("--------------");
+////        System.out.println("--------------");
+////        System.out.println("--------------");
+////        tm1.AffichageSousThematique();
+//        } catch (Exception ex) {
+//            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        
 //          ArrayList<Livre> tata = Livre.AffichageLivre();
 //          System.out.println(tata.get(2));
 //          
@@ -105,6 +98,13 @@ public class Test {
 //        System.out.println(toto.get(2));
 //        toto.get(2).UpdateEditeur();
 //        System.out.println(toto.get(2));
+        
+        Livre livre = new Livre();
+        livre.setIsbnLivre("2253111465");
+        livre.getSqlData();
+        
+        System.out.println(livre.toString2());
+        
         
         
     }
