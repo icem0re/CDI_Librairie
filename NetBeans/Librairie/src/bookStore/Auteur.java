@@ -148,37 +148,33 @@ public class Auteur {
         this.bioAuteur = bioAuteur;
     }
 
-    public static ArrayList<Auteur> AffichageAuteur() {
+    public static ArrayList<Auteur> AffichageAuteur(String isbnLivre) {
 
         ArrayList<Auteur> listeAuteur = new ArrayList();
 
-        SqlManager sql1 = null;
-
-            sql1 = new SqlManager();
+        SqlManager sql1 = new SqlManager();
         
-
-        try (Connection cnt = sql1.GetConnection();
-                Statement stm = cnt.createStatement();) {
-
-            String req = "select a.nomAuteur, a.prenomAuteur, l.titreLivre"
+        String req = "select a.idAuteur"
                     + " from Auteur a"
                     + " join Redaction r"
                     + " on a.idAuteur = r.idAuteur "
                     + " join Livre l"
                     + " on r.isbnLivre = l.isbnLivre"
+                    + " AND isbnLIvre = ? "
                     + " ORDER BY nomAuteur ";
 
-            ResultSet rs = stm.executeQuery(req);
+        try (Connection cnt = sql1.GetConnection();
+                PreparedStatement stm = cnt.prepareStatement(req);) {
+
+            
+
+            stm.setString(1, isbnLivre);
+            ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
-                Auteur auteur = new Auteur();
-                Livre newlivre = new Livre();
-                newlivre.setTitreLivre(rs.getString("titreLivre"));
+                Auteur auteur = new Auteur(rs.getInt("idAuteur"));
 
-                auteur.setNomAuteur(rs.getString("nomAuteur"));
-                auteur.setPrenomAuteur(rs.getString("prenomAuteur"));
-
-                System.out.println("Auteur = " + auteur.getNomAuteur() + " " + auteur.getPrenomAuteur());
+                //System.out.println("Auteur = " + auteur.getNomAuteur() + " " + auteur.getPrenomAuteur());
 
                 listeAuteur.add(auteur);
             }

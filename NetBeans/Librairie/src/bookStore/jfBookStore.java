@@ -413,7 +413,6 @@ public class jfBookStore extends javax.swing.JFrame {
 
         jDesktopPane1.setBackground(new java.awt.Color(255, 255, 255));
         jDesktopPane1.setMinimumSize(new java.awt.Dimension(300, 500));
-        jDesktopPane1.setPreferredSize(new java.awt.Dimension(300, 500));
 
         jLabel13.setText("Nom :");
         jDesktopPane1.add(jLabel13);
@@ -520,7 +519,6 @@ public class jfBookStore extends javax.swing.JFrame {
         jFrame1.getContentPane().add(jDesktopPane1, java.awt.BorderLayout.CENTER);
 
         jFrame2.setMinimumSize(new java.awt.Dimension(300, 500));
-        jFrame2.setPreferredSize(new java.awt.Dimension(300, 500));
         jFrame2.setResizable(false);
         jFrame2.setSize(new java.awt.Dimension(300, 500));
 

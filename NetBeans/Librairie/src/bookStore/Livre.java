@@ -50,7 +50,8 @@ public class Livre {
 
     public Livre(String isbnLivre) throws SQLException, Exception{
         setIsbnLivre(isbnLivre);
-        getSqlData();  
+        getSqlData();
+        
     }
     
     public Livre(String titreLivre, String isbnLivre) throws Exception{
@@ -101,8 +102,6 @@ public class Livre {
                     Editeur newEditeur = new Editeur(rs.getString("nomEditeur"));
                     newEditeur.getSqlData();
                 setEditeur(newEditeur);
-                    Auteur newAuteur = new Auteur (rs.getInt("idAuteur"));
-                    mesAuteur.add(newAuteur);
                    
                     Thematique newThematique = new Thematique(rs.getString("idSousThematique"));;
                     mesThematique.add(newThematique);
@@ -117,6 +116,10 @@ public class Livre {
                 setAffichageLivre(rs.getBoolean("affichageLivre"));
                 
             }
+            mesAuteur = Auteur.AffichageAuteur(isbnLivre);
+            for (int i = 0; i < mesThematique.size(); i++) {
+                mesThematique = Thematique.AffichageSousThematique(Thematique.AffichageThematique().get(i).getNomThematique());
+            }
             
             
         } catch (SQLException ex) {
@@ -126,6 +129,8 @@ public class Livre {
         }
         
     }
+    
+    
     
     public void UpdateLivre2() throws SQLException, Exception {
         
@@ -435,10 +440,6 @@ public class Livre {
         
         String req = "SELECT "
                     + "     l.isbnLivre, "
-                    + "     l.titreLivre, "
-                    + "     e.nomEditeur, "
-                    + "     e.logoEditeur, "
-                    + "     e.statutEditeur "
                     + " FROM "
                     + "     LIVRE l "
                     + " JOIN Editeur e "
@@ -524,6 +525,7 @@ public class Livre {
             while (rs.next()) {
                 Livre livre = new Livre(rs.getString("isbnLivre"));
                 Biblio.add(livre);
+
             }
         } catch (SQLException ex) {
             throw ex;
