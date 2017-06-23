@@ -15,7 +15,7 @@ public class JGestion extends javax.swing.JFrame {
 
     private JClientMain jdClient;
     private jfBookStore jStore;
-    
+    private JEvent jEvent;
     /**
      * Creates new form JGestion
      */
@@ -78,6 +78,11 @@ public class JGestion extends javax.swing.JFrame {
         jButtonGestionEvenements.setFocusable(false);
         jButtonGestionEvenements.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButtonGestionEvenements.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButtonGestionEvenements.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonGestionEvenementsActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jButtonGestionEvenements);
 
         jButtonGestionEditeurs.setText("Gestion Editeurs");
@@ -163,6 +168,22 @@ public class JGestion extends javax.swing.JFrame {
             jStore.toFront();
         }
     }//GEN-LAST:event_jButtonGestionLivresActionPerformed
+
+    private void jButtonGestionEvenementsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGestionEvenementsActionPerformed
+        // TODO add your handling code here:
+        
+         if(jEvent==null){
+           jEvent=new JEvent();
+           jEvent.setVisible(true);          
+        } else if (!jEvent.isVisible()){
+            jEvent=new JEvent();
+            jEvent.setVisible(true);           
+        }else if(jEvent.getState()==Frame.ICONIFIED){
+            jEvent.setState(Frame.NORMAL);
+        }else{
+            jEvent.toFront();
+        }
+    }//GEN-LAST:event_jButtonGestionEvenementsActionPerformed
 
     /**
      * @param args the command line arguments
