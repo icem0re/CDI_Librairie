@@ -522,18 +522,8 @@ public class Livre {
             ResultSet rs = stm.executeQuery();
 
             while (rs.next()) {
-                Livre livre = new Livre();
-
-                //Auteur auteur = new Auteur(rs.getInt("idAuteur"));
-                livre.setIsbnLivre(rs.getString("isbnLivre"));
-                Editeur newEditeur = new Editeur(rs.getString("nomEditeur"));
-                newEditeur.setLogoEditeur(rs.getString("logoEditeur"));
-                newEditeur.setStatutEditeur(rs.getString("statutEditeur"));
-                livre.setEditeur(newEditeur);
-                livre.setTitreLivre(rs.getString("titreLivre"));
-
+                Livre livre = new Livre(rs.getString("isbnLivre"));
                 Biblio.add(livre);
-
             }
         } catch (SQLException ex) {
             throw ex;
