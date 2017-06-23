@@ -297,8 +297,6 @@ public class Evenement {
             throw new Exception("Livre [" + livre.getIsbnLivre() + "] déjà ajouté");
         }
         mesLivres.add(livre);
-        System.out.println("added booked : " + livre.getIsbnLivre());
-            System.out.println("count after add : " + mesLivres.size());
     }
     
     /**
@@ -313,9 +311,7 @@ public class Evenement {
      * Supprimer tous les livres de l'événement
      */
     public void clearLivre(){
-        System.out.println("count before clear : " + mesLivres.size());
         mesLivres.clear();
-            System.out.println("count after clear : " + mesLivres.size());
     }
     
     // Iterates over all transactions until a transaction is found that has the
