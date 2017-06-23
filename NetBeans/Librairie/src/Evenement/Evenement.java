@@ -18,6 +18,7 @@ package Evenement;
 
 
 import Exception.DuplicateConstraintSQLException;
+import Exception.EmptyBookEventSQLException;
 import Exception.IdSQLException;
 import RuntimeException.InvalidNameRuntimeException;
 import bookStore.Livre;
@@ -90,7 +91,7 @@ public class Evenement {
      * @param isbn
      * @return ArrayList of Evenement from the DB
      */
-    public static ArrayList<Evenement> livreHasEvents(String isbn){
+    public static ArrayList<Evenement> getLivreEvents(String isbn) throws SQLException{
         ArrayList<Evenement> ArrayListEvenement = new ArrayList<>();
         
         String query = "SELECT idEvenement"
@@ -127,9 +128,9 @@ public class Evenement {
         setDateDebut(LocalDate.now());
         dateFin = null;
         lieu = null;
-        reduction = null;
+        reduction = 0f;
         codePromo = null;
-        promoImmediat = null;
+        promoImmediat = false;
         commentaire = null;
         mesLivres = new ArrayList<>();
     }
@@ -292,12 +293,12 @@ public class Evenement {
      */
     public void addLivre(Livre livre) throws Exception{
         // verifier que le livre n'as pas déja été ajouté
-        for (Livre book : mesLivres){
-            if (containsISBN(book.getIsbnLivre())){
-                throw new Exception("Livre [" + book.getIsbnLivre() + "] déjà ajouté");
-            }
+        if (containsISBN(livre.getIsbnLivre())){
+            throw new Exception("Livre [" + livre.getIsbnLivre() + "] déjà ajouté");
         }
         mesLivres.add(livre);
+        System.out.println("added booked : " + livre.getIsbnLivre());
+            System.out.println("count after add : " + mesLivres.size());
     }
     
     /**
@@ -308,9 +309,18 @@ public class Evenement {
         mesLivres.remove(livre);
     }
     
+    /**
+     * Supprimer tous les livres de l'événement
+     */
+    public void clearLivre(){
+        System.out.println("count before clear : " + mesLivres.size());
+        mesLivres.clear();
+            System.out.println("count after clear : " + mesLivres.size());
+    }
+    
     // Iterates over all transactions until a transaction is found that has the
     // same name as specified in search
-    private boolean containsISBN(final String isbn) {
+    public boolean containsISBN(final String isbn) {
         for (final Livre livre : mesLivres) {
             if (livre.getIsbnLivre().equals(isbn)) {
                 return true;
@@ -547,7 +557,7 @@ public class Evenement {
                 // Exécuter une requête
                 pstm.executeUpdate();
             }
-            
+                        
         } catch (SQLException ex) {
             
             if (ex.getErrorCode()==2627){ // Violation de la contrainte UNIQUE KEY
@@ -561,7 +571,7 @@ public class Evenement {
     public void saveBookList() throws DuplicateConstraintSQLException, SQLException {
 
         if (mesLivres.isEmpty()) {
-            throw new SQLException("No books to save");
+            throw new EmptyBookEventSQLException("Merci de renseigner au moins un livre");
         }
 
         if ((this.getId()).equals(0)) {
