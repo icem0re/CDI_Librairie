@@ -88,45 +88,6 @@ public class Employe {
         return ArrayListEmploye;
     }
     
-    
-    /**
-     * Test si le couple login + mdp existe dans la BDD.
-     * Attention : le mdp transmis doit être chiffré.
-     * @param login
-     * @param mdp
-     * @return
-     * @throws SQLException 
-     */
-    public static Boolean exists(String login, String mdp) throws SQLException{
-        
-        String req = "SELECT COUNT(idEmploye) as counter "
-                    + " FROM Employe "
-                + " WHERE "
-                + " loginEmploye = ? AND "
-                + " mdpEmploye = ? ";
-        
-        try (
-                Connection cnt = new SqlManager.SqlManager().GetConnection();
-                PreparedStatement pstm = cnt.prepareStatement(req);
-            ){
-
-            // Créer une requete
-            int i = 1;
-            pstm.setString(i++, login);
-            pstm.setString(i++, mdp);
-            pstm.executeQuery();
-                
-            ResultSet rs = pstm.getResultSet();
-            rs.next();
-            if (rs.getInt("counter")==1){
-                return true;
-            }
-            return false;
-            
-        } catch (SQLException ex) {
-            throw ex;
-        } 
-    }
          /**
      * Count number of employe in the DB
      * @return Boolean
@@ -192,7 +153,7 @@ public class Employe {
      * Count number of active employe in the DB
      * returns all employe with wich the date of 
      * end of employement don't exceeds today
-     * @param id of employe to exclude in the count
+     * @param ignoreId of employe to exclude in the count
      * @return Boolean
      * @throws java.sql.SQLException
      */
@@ -219,6 +180,45 @@ public class Employe {
             ResultSet rs = pstm.getResultSet();
             rs.next();
             return rs.getInt("counter");
+            
+        } catch (SQLException ex) {
+            throw ex;
+        } 
+    }
+    
+    /**
+     * Test si le couple login + mdp existe dans la BDD.
+     * Attention : le mdp transmis doit être chiffré.
+     * @param login
+     * @param mdp
+     * @return
+     * @throws SQLException 
+     */
+    public static Boolean exists(String login, String mdp) throws SQLException{
+        
+        String req = "SELECT COUNT(idEmploye) as counter "
+                    + " FROM Employe "
+                + " WHERE "
+                + " loginEmploye = ? AND "
+                + " mdpEmploye = ? ";
+        
+        try (
+                Connection cnt = new SqlManager.SqlManager().GetConnection();
+                PreparedStatement pstm = cnt.prepareStatement(req);
+            ){
+
+            // Créer une requete
+            int i = 1;
+            pstm.setString(i++, login);
+            pstm.setString(i++, mdp);
+            pstm.executeQuery();
+                
+            ResultSet rs = pstm.getResultSet();
+            rs.next();
+            if (rs.getInt("counter")==1){
+                return true;
+            }
+            return false;
             
         } catch (SQLException ex) {
             throw ex;
