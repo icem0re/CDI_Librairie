@@ -7,11 +7,13 @@
       ,[loginEmploye]
       ,[mdpEmploye]
       ,[emailEmploye]
-      ,[debutPosteEmploye]
-      ,[finPosteEmploye])
-
-	  VALUES ('MORICE', 'DAVID','d.morice', 'mlazhCC27uvGc7v1sfFb3XOcaU/skfIbk0vr5raYGdg=','d.morice@librairie.com', '2016-01-30', NULL),
-	  ('fabrice', 'antoine','a.fabrice', 'jIELnt+LnoskohE1tRakZqEkEJUO6wVOHDO4qlRypL4=','a.fabrice@librairie.com', '2014-06-06', '2015-02-21'),
-	  ('Le grand', 'jerome','j.le-grand', 'ibiCgyUWOVtbjFkKYQ60tzIJY0jRIo2YESyiLCaqaGE=','j.le-grand@librairie.com', '2016-11-12', '2017-01-01'),
-	  ('EINSTEIN', 'albert','e.EINSTEIN', 'wt1txt/a3fA9omSEAvyNu1uaXKsVHxbpcuHgWD/Ql3A=','e.EINSTEIN@librairie.com', '2017-06-01', NULL);
-
+      ,[debutPosteEmploye])
+  VALUES 
+	(
+		'ADMINISTRATEUR', 
+		'Secours', 
+		'admin_sec', 
+		'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk=', 
+		'admin_sec@help.com', 
+		'2017-01-01'
+	);
