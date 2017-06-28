@@ -22,10 +22,9 @@ public class GestionCommande extends javax.swing.JFrame {
     /**
      * Creates new form GestionCommande
      */
-    public GestionCommande() {        
+    public GestionCommande() {
         initComponents();
         jRadioButtonNumCmd.setSelected(true);
-
     }
 
     /**
@@ -132,7 +131,8 @@ public class GestionCommande extends javax.swing.JFrame {
         getContentPane().add(jPanel1);
         jPanel1.setBounds(0, 46, 513, 136);
 
-        setBounds(0, 0, 529, 219);
+        setSize(new java.awt.Dimension(529, 219));
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextFieldInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldInfoActionPerformed
@@ -145,12 +145,15 @@ public class GestionCommande extends javax.swing.JFrame {
             Commande Cmd;
             try {
                 Cmd = new Commande(Integer.valueOf(jTextFieldInfo.getText()));
-                GestionNumCommande Gnc = new GestionNumCommande(Cmd);
-            Gnc.setVisible(rootPaneCheckingEnabled);
-            //Gnc.affichageCommande();
-            this.setVisible(false);
+                GestionNumCommande Gnc = new GestionNumCommande(this, Cmd);
+                Gnc.setVisible(rootPaneCheckingEnabled);
+                this.setVisible(false);
             } catch (SQLException ex) {
-                Logger.getLogger(GestionCommande.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this, "Erreur de saisie. \n[" 
+                        + ex.getMessage() 
+                        +"]"
+                        , "Erreur"
+                        , JOptionPane.ERROR_MESSAGE);
             }
 
         }
@@ -159,11 +162,16 @@ public class GestionCommande extends javax.swing.JFrame {
             try {
                 Client myclient = new Client(Integer.valueOf(jTextFieldInfo.getText()));
                 myclient = new Client(Integer.valueOf(jTextFieldInfo.getText()));
-                GestionTouteCommande Gtc = new GestionTouteCommande(myclient);
+                GestionTouteCommande Gtc = new GestionTouteCommande(this, myclient);
                 Gtc.setVisible(rootPaneCheckingEnabled);
                 this.setVisible(false);
             } catch (SQLException ex) {
-                Logger.getLogger(GestionCommande.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println(ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Erreur de saisie. \n[" 
+                        + ex.getMessage() 
+                        +"]"
+                        , "Erreur"
+                        , JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_jButton1ActionPerformed

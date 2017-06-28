@@ -4,11 +4,25 @@
  * and open the template in the editor.
  */
 package Commande;
+
+import Administration.Statut;
 import Utilisateur.Adresse;
 import Utilisateur.Client;
 import java.sql.SQLException;
 import Administration.StatutCommande;
-import java.time.LocalDate;
+import bookStore.Editeur;
+import bookStore.jfBookStore;
+import com.toedter.calendar.demo.DateChooserPanel;
+import java.awt.Dimension;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -17,58 +31,113 @@ import java.time.LocalDate;
 public class GestionNumCommande extends javax.swing.JFrame {
 
     private Commande Cmd;
+    private GestionCommande gc;
+    private GestionTouteCommande gtc;
+
+    
+    public GestionNumCommande(GestionTouteCommande gtc, Commande Cmd) throws SQLException {
+        this(Cmd);
+        this.gtc = gtc;
+    }
+    
+    public GestionNumCommande(GestionCommande gc, Commande Cmd) throws SQLException {
+        this(Cmd);
+        this.gc = gc;
+    }
     /**
      * Creates new form GestionNumCommande
+     *
      * @param Cmd
      */
     public GestionNumCommande(Commande Cmd) throws SQLException {
         this.Cmd = Cmd;
 
-//        Adresse af = new Adresse(Cmd.getIdAdresseFacturation());
-//        Adresse al = new Adresse(Cmd.getIdAdresseLivraison());
-//        Client cc = new Client(Cmd.getIdClient());
-//        LocalDate a = Cmd.getDateCommande();
-//        LocalDate b = Cmd.getDatePaiementCommande();
-//        LocalDate c = Cmd.getDatePreparationCommande();
-//        LocalDate d = Cmd.getDateExpeditionCommande();
-//        LocalDate e = Cmd.getDateAccuseReceptionCommande();
-//        LocalDate f = Cmd.getDateAnnulationCommande();
-//        StatutCommande g = new StatutCommande(Cmd.getStatutCommande(), null);
-//        Livreur l = new Livreur(Cmd.getNomLivreur(), TOP_ALIGNMENT, ALLBITS, null);
-         initComponents();
-jTextField1.setText(""+new Client(Cmd.getIdClient()));
-jTextField2.setText(""+new Adresse(Cmd.getIdAdresseFacturation()));
-jTextField3.setText(""+new Adresse(Cmd.getIdAdresseLivraison()));
-jTextField4.setText(""+Cmd.getDateCommande());
-jTextField5.setText(""+Cmd.getDatePaiementCommande());
-jTextField6.setText(""+Cmd.getDatePreparationCommande());
-jTextField7.setText(""+Cmd.getDateExpeditionCommande());
-jTextField8.setText(""+Cmd.getDateAccuseReceptionCommande());
-jTextField9.setText(""+Cmd.getDateAnnulationCommande());
-jTextField10.setText(""+new StatutCommande(Cmd.getStatutCommande(), null));
-jTextField11.setText(""+Cmd.getIpCommande());
-jTextField12.setText(""+Cmd.getNomLivreur());
-//System.out.println("Commande n :" + 
-//        "\n Client :"+ new Client(Cmd.getIdClient())
-//        +"\n Adresse liv :"+al
-//        +"\n Adresse fact :"+af
-//        +"\n "+ Cmd.getDateCommande()
-//        +"\n"+(b==null ? "" : b.toString())
-//        +"\n"+(c==null ? "" : c.toString())
-//        +"\n"+(d==null ? "" : d.toString())
-//        +"\n"+(e==null ? "" : e.toString())
-//        +"\n"+(f==null ? "" : f.toString())
-//        +"\n"+(g==null ? "" : g.toString())
-//        +"\n"+l );
-   
-       
-    }
-   
-    
-    public void affichageCommande(){
-      // jTextArea1.setText(""+Cmd.getIdAdresseFacturation()+"\n"+Cmd.getIdClient());
+        initComponents();
+        setSize(new java.awt.Dimension(801, 750));
+        jTextField1.setText("" + new Client(Cmd.getIdClient()));
+        jTextField2.setText("" + new Adresse(Cmd.getIdAdresseFacturation()));
+        jTextField3.setText("" + new Adresse(Cmd.getIdAdresseLivraison()));
+        jTextField4.setText("" + Cmd.getDateCommande());
+        jTextField5.setText("" + Cmd.getDatePaiementCommande());
+        if (Cmd.getDatePreparationCommande() != null) {
+            jDateChooserPreparation.setDate(java.sql.Date.valueOf(Cmd.getDatePreparationCommande()));
+        }
+        if (Cmd.getDateExpeditionCommande() != null) {
+            jDateChooserExpedition.setDate(java.sql.Date.valueOf(Cmd.getDateExpeditionCommande()));
+        }
+        if (Cmd.getDateAccuseReceptionCommande() != null) {
+            jDateChooserReception.setDate(java.sql.Date.valueOf(Cmd.getDateAccuseReceptionCommande()));
+        }
+        jTextField9.setText("" + Cmd.getDateAnnulationCommande());
+        jTextField6.setText("" + Cmd.getStatutCommande());
+        jTextField11.setText("" + Cmd.getIpCommande());
+        jTextField12.setText("" + Cmd.getNomLivreur());
+        jTextArea1.setText("" + Cmd.getLignesDeCommande());
     }
 
+    private DefaultComboBoxModel initModelStatutCom() {
+        try {
+            return new DefaultComboBoxModel(initStatutCom());
+        } catch (SQLException ex) {
+            Logger.getLogger(GestionNumCommande.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new DefaultComboBoxModel();
+    }
+
+    private Vector initStatutCom() throws SQLException {
+        Vector v = new Vector();
+        ArrayList<Statut> mesStatutsCom = StatutCommande.getStatut();
+
+        String lastStatut = null;
+        String lastInfo = null;
+        for (int i = 0; i < mesStatutsCom.size(); i++) {
+            if (lastStatut == null) {
+                lastStatut = mesStatutsCom.get(i).getCode();
+                lastInfo = mesStatutsCom.get(i).getInfo();
+                StatutCommande Statut = null;
+
+                Statut = new StatutCommande();
+                Statut.setCode(lastStatut);
+                Statut.setInfo(lastInfo);
+
+                v.add(Statut);
+            }
+            if (!lastStatut.equalsIgnoreCase(mesStatutsCom.get(i).getCode())) {
+                lastStatut = mesStatutsCom.get(i).getCode();
+                lastInfo = mesStatutsCom.get(i).getInfo();
+                StatutCommande Statut = null;
+
+                Statut = new StatutCommande();
+                Statut.setCode(lastStatut);
+                Statut.setInfo(lastInfo);
+
+                v.add(Statut);
+            }
+        }
+
+        return v;
+    }
+
+    private java.time.LocalDate date2LocalDate(java.util.Date date) {
+        if (date==null){return null;}
+        return date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+    }
+    
+    private java.util.Date date2SQLDate(java.time.LocalDate date){
+        return java.sql.Date.valueOf(date);
+    }
+
+    private java.util.Date localDate2Date(java.time.LocalDate localDate) {
+        return java.util.Date.from((localDate).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant());
+    }
+
+    private java.sql.Date localDate2SQLDate(java.time.LocalDate localDate) {
+        return java.sql.Date.valueOf(localDate);
+    }
+
+//    public void affichageCommande(){
+//      // jTextArea1.setText(""+Cmd.getIdAdresseFacturation()+"\n"+Cmd.getIdClient());
+//    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -79,6 +148,7 @@ jTextField12.setText(""+Cmd.getNomLivreur());
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
+        jDateChooser1 = new com.toedter.calendar.JDateChooser();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
@@ -87,11 +157,7 @@ jTextField12.setText(""+Cmd.getNomLivreur());
         jTextField3 = new javax.swing.JTextField();
         jTextField4 = new javax.swing.JTextField();
         jTextField5 = new javax.swing.JTextField();
-        jTextField6 = new javax.swing.JTextField();
-        jTextField7 = new javax.swing.JTextField();
-        jTextField8 = new javax.swing.JTextField();
         jTextField9 = new javax.swing.JTextField();
-        jTextField10 = new javax.swing.JTextField();
         jTextField11 = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -106,15 +172,24 @@ jTextField12.setText(""+Cmd.getNomLivreur());
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jTextField12 = new javax.swing.JTextField();
-        jTextField13 = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
+        jButtonRetour = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+        jDateChooserPreparation = new com.toedter.calendar.JDateChooser();
+        jDateChooserExpedition = new com.toedter.calendar.JDateChooser();
+        jDateChooserReception = new com.toedter.calendar.JDateChooser();
+        jTextField6 = new javax.swing.JTextField();
+        jButtonValider = new javax.swing.JButton();
+        listStatut = new javax.swing.JComboBox();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(784, 612));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel1.setText("Numéro de la commande:");
@@ -124,6 +199,7 @@ jTextField12.setText(""+Cmd.getNomLivreur());
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Détail de la commande", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
 
         jTextField1.setEditable(false);
+        jTextField1.setBackground(new java.awt.Color(204, 255, 255));
         jTextField1.setText("jTextField1");
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -132,29 +208,32 @@ jTextField12.setText(""+Cmd.getNomLivreur());
         });
 
         jTextField2.setEditable(false);
+        jTextField2.setBackground(new java.awt.Color(204, 255, 255));
         jTextField2.setText("jTextField2");
 
         jTextField3.setEditable(false);
+        jTextField3.setBackground(new java.awt.Color(204, 255, 255));
         jTextField3.setText("jTextField3");
 
         jTextField4.setEditable(false);
+        jTextField4.setBackground(new java.awt.Color(204, 255, 255));
         jTextField4.setText("jTextField4");
 
         jTextField5.setEditable(false);
+        jTextField5.setBackground(new java.awt.Color(204, 255, 255));
         jTextField5.setText("jTextField5");
 
-        jTextField6.setText("jTextField6");
-
-        jTextField7.setText("jTextField7");
-
-        jTextField8.setText("jTextField8");
-
         jTextField9.setEditable(false);
+        jTextField9.setBackground(new java.awt.Color(204, 255, 255));
         jTextField9.setText("jTextField9");
-
-        jTextField10.setText("jTextField10");
+        jTextField9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField9ActionPerformed(evt);
+            }
+        });
 
         jTextField11.setEditable(false);
+        jTextField11.setBackground(new java.awt.Color(204, 255, 255));
         jTextField11.setText("jTextField11");
 
         jLabel3.setText("Client");
@@ -182,45 +261,62 @@ jTextField12.setText(""+Cmd.getNomLivreur());
         jLabel14.setText("Livreur");
 
         jTextField12.setEditable(false);
+        jTextField12.setBackground(new java.awt.Color(204, 255, 255));
         jTextField12.setText("jTextField12");
-
-        jTextField13.setEditable(false);
-        jTextField13.setText("jTextField13");
 
         jLabel15.setText("Ligne(s) de commande");
 
-        jButton3.setText("Modifier");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        jButtonRetour.setText("Retour");
+        jButtonRetour.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                jButtonRetourActionPerformed(evt);
             }
         });
 
-        jButton4.setText("Modifier");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+        jTextArea1.setEditable(false);
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jTextArea1.setName(""); // NOI18N
+        jScrollPane1.setViewportView(jTextArea1);
+
+        jDateChooserPreparation.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jDateChooserPreparationMouseClicked(evt);
+            }
+        });
+        jDateChooserPreparation.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                jDateChooserPreparationPropertyChange(evt);
+            }
+        });
+        jDateChooserPreparation.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jDateChooserPreparationKeyPressed(evt);
             }
         });
 
-        jButton5.setText("Modifier");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        jDateChooserExpedition.setName("JDateChooserExpedition"); // NOI18N
+
+        jDateChooserReception.setName("JDateChooserReception"); // NOI18N
+
+        jTextField6.setText("jTextField6");
+
+        jButtonValider.setText("Valider changements");
+        jButtonValider.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                jButtonValiderActionPerformed(evt);
             }
         });
 
-        jButton6.setText("Modifier");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+        listStatut.setModel(initModelStatutCom());
+        listStatut.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                listStatutItemStateChanged(evt);
             }
         });
-
-        jButton7.setText("Retour");
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
+        listStatut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton7ActionPerformed(evt);
+                listStatutActionPerformed(evt);
             }
         });
 
@@ -229,48 +325,44 @@ jTextField12.setText(""+Cmd.getNomLivreur());
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel7)
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel10)
+                    .addComponent(jLabel11)
+                    .addComponent(jLabel12)
+                    .addComponent(jLabel15)
+                    .addComponent(jLabel13)
+                    .addComponent(jLabel14))
+                .addGap(70, 70, 70)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel9)
-                            .addComponent(jLabel10)
-                            .addComponent(jLabel11)
-                            .addComponent(jLabel12)
-                            .addComponent(jLabel15)
-                            .addComponent(jLabel13)
-                            .addComponent(jLabel14))
-                        .addGap(70, 70, 70)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextField13, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
-                            .addComponent(jTextField12)
-                            .addComponent(jTextField10, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jTextField9, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jTextField8, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jTextField7, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jTextField6, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jTextField11)
-                            .addComponent(jTextField1)
-                            .addComponent(jTextField2)
-                            .addComponent(jTextField3))
+                        .addComponent(jButtonRetour)
+                        .addGap(55, 55, 55)
+                        .addComponent(jButtonValider))
+                    .addComponent(jTextField12)
+                    .addComponent(jTextField9, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jTextField5, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jTextField4, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jTextField11)
+                    .addComponent(jTextField1)
+                    .addComponent(jTextField2)
+                    .addComponent(jTextField3)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 319, Short.MAX_VALUE)
+                    .addComponent(jDateChooserPreparation, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jDateChooserExpedition, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jDateChooserReception, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jTextField6, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton3)
-                            .addComponent(jButton4)
-                            .addComponent(jButton5)
-                            .addComponent(jButton6)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(224, 224, 224)
-                        .addComponent(jButton7)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(listStatut, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -296,29 +388,29 @@ jTextField12.setText(""+Cmd.getNomLivreur());
                     .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel9)
-                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10)
-                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel8)
+                        .addGap(12, 12, 12)
+                        .addComponent(jLabel9)
+                        .addGap(12, 12, 12)
+                        .addComponent(jLabel10))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jDateChooserPreparation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jDateChooserExpedition, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jDateChooserReception, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel11))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel12)
-                    .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(listStatut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -328,17 +420,19 @@ jTextField12.setText(""+Cmd.getNomLivreur());
                     .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel14))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel15)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel15))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 131, Short.MAX_VALUE)
-                .addComponent(jButton7))
+                    .addComponent(jButtonRetour)
+                    .addComponent(jButtonValider)))
         );
 
-        jButton3.getAccessibleContext().setAccessibleName("ModifierDatePreparation");
-        jButton4.getAccessibleContext().setAccessibleName("ModifierDateExpedition");
-        jButton5.getAccessibleContext().setAccessibleName("ModifierDateReception");
-        jButton6.getAccessibleContext().setAccessibleName("ModifierStatut");
+        jDateChooserExpedition.getAccessibleContext().setAccessibleName("JDateChooserExpedition");
+        jDateChooserReception.getAccessibleContext().setAccessibleName("JDateChooserReception");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -363,85 +457,137 @@ jTextField12.setText(""+Cmd.getNomLivreur());
                     .addComponent(jLabel2))
                 .addGap(18, 18, 18)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        pack();
+        setSize(new java.awt.Dimension(562, 611));
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-       this.setVisible(false);
-       GestionCommande gc = new GestionCommande();
-       gc.setVisible(true);
-    }//GEN-LAST:event_jButton7ActionPerformed
+    private void jButtonRetourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRetourActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_jButtonRetourActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        Cmd.setDatePreparationCommande(LocalDate.parse(jTextField6.getText()));
-        Cmd.insererCommandeSQL();     
-    }//GEN-LAST:event_jButton3ActionPerformed
+    private void jDateChooserPreparationKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jDateChooserPreparationKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jDateChooserPreparationKeyPressed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        Cmd.setStatutCommande(jTextField10.getText());
-        Cmd.insererCommandeSQL();
-    }//GEN-LAST:event_jButton6ActionPerformed
+    private void jDateChooserPreparationMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jDateChooserPreparationMouseClicked
+        // TODO add your handling code here:
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        Cmd.setDateAccuseReceptionCommande(LocalDate.parse(jTextField8.getText()));
-        Cmd.insererCommandeSQL();
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }//GEN-LAST:event_jDateChooserPreparationMouseClicked
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        Cmd.setDateExpeditionCommande(LocalDate.parse(jTextField7.getText()));
-        Cmd.insererCommandeSQL();
-    }//GEN-LAST:event_jButton4ActionPerformed
+    private void jDateChooserPreparationPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jDateChooserPreparationPropertyChange
+        // TODO add your handling code here:
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+    }//GEN-LAST:event_jDateChooserPreparationPropertyChange
+
+    private void jButtonValiderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonValiderActionPerformed
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+            Commande c1 = new Commande(Integer.valueOf(jLabel2.getText()));
+            if (c1.getDatePreparationCommande() == null) {
+                c1.setDatePreparationCommande(null);
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(GestionNumCommande.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(GestionNumCommande.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(GestionNumCommande.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(GestionNumCommande.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+            c1.setDatePreparationCommande((date2LocalDate(jDateChooserPreparation.getDate())));
+            if (c1.getDateExpeditionCommande() == null) {
+                c1.setDateExpeditionCommande(null);
+            }
+            c1.setDatePreparationCommande(date2LocalDate(jDateChooserPreparation.getDate()));
+            if (c1.getDateExpeditionCommande() == null) {
+                c1.setDateExpeditionCommande(null);
+            }
+            c1.setDateExpeditionCommande(date2LocalDate(jDateChooserExpedition.getDate()));
+            if (c1.getDateAccuseReceptionCommande() == null) {
+                c1.setDateAccuseReceptionCommande(null);
+            }
+            c1.setDateAccuseReceptionCommande(date2LocalDate(jDateChooserReception.getDate()));
+            c1.setStatutCommande(listStatut.getSelectedItem().toString());
+            c1.updateCommandeSQL();
+            
+            this.dispose();
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                GestionCommande G = new GestionCommande();
-                G.setVisible(true);
-            }
-        });
-    }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Erreur SQL", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(GestionNumCommande.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButtonValiderActionPerformed
+
+    private void listStatutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listStatutActionPerformed
+
+// lister les statuts...
+
+    }//GEN-LAST:event_listStatutActionPerformed
+
+    private void jTextField9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField9ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField9ActionPerformed
+
+    private void listStatutItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_listStatutItemStateChanged
+        StatutCommande t = (StatutCommande) listStatut.getSelectedItem();
+        jTextField6.setText(t.getCode());
+    }//GEN-LAST:event_listStatutItemStateChanged
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        // TODO add your handling code here:
+        if (gtc!=null){
+            gtc.setVisible(true);
+        } else if(gc!=null){
+            gc.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Le module parent est introuvable", "Erreur Fatale", JOptionPane.ERROR_MESSAGE);
+        }
+        
+    }//GEN-LAST:event_formWindowClosed
+//
+//    /**
+//     * @param args the command line arguments
+//     */
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(GestionNumCommande.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(GestionNumCommande.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(GestionNumCommande.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(GestionNumCommande.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                GestionCommande G = new GestionCommande();
+//                G.setVisible(true);
+//            }
+//        });
+//    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButtonRetour;
+    private javax.swing.JButton jButtonValider;
+    private com.toedter.calendar.JDateChooser jDateChooser1;
+    private com.toedter.calendar.JDateChooser jDateChooserExpedition;
+    private com.toedter.calendar.JDateChooser jDateChooserPreparation;
+    private com.toedter.calendar.JDateChooser jDateChooserReception;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -458,20 +604,17 @@ jTextField12.setText(""+Cmd.getNomLivreur());
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField10;
     private javax.swing.JTextField jTextField11;
     private javax.swing.JTextField jTextField12;
-    private javax.swing.JTextField jTextField13;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField7;
-    private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
+    private javax.swing.JComboBox listStatut;
     // End of variables declaration//GEN-END:variables
 }
-
-

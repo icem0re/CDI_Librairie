@@ -1,5 +1,6 @@
 package Commande;
 
+import Exception.DuplicateConstraintSQLException;
 import Exception.IdSQLException;
 import SqlManager.SqlManager;
 import java.sql.Connection;
@@ -10,6 +11,9 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 public class Commande {
 
@@ -24,17 +28,18 @@ public class Commande {
     private LocalDate dateAccuseReceptionCommande;
     private LocalDate dateAnnulationCommande;
     private String statutCommande;
-    private String ipCommande; 
+    private String ipCommande;
     private String nomLivreur;
     private ArrayList<LigneDeCommande> LignesDeCommande;
 
     public Commande() {
         setNumCommande(0);
-        this.datePaiementCommande=null;
-        this.datePreparationCommande=null;
-        this.dateExpeditionCommande=null;
-        this.dateAccuseReceptionCommande=null;
-        this.dateAnnulationCommande=null;
+        this.datePaiementCommande = null;
+        this.datePreparationCommande = null;
+        this.dateExpeditionCommande = null;
+        this.dateAccuseReceptionCommande = null;
+        this.dateAnnulationCommande = null;
+        LignesDeCommande = new ArrayList<>();
     }
 
     // Recupere depuis sql à partir d'une methode SELECT
@@ -42,6 +47,7 @@ public class Commande {
         this();
         setNumCommande(numCommande);
         getCommandeFromSQL();
+        getLdcFromSQL();
     }
 
     // donnee fournit depuis un utilisateur 
@@ -164,9 +170,13 @@ public class Commande {
         return LignesDeCommande;
     }
 
+    public void ajouterLdcCommande(LigneDeCommande elemCommande) {
+        this.LignesDeCommande.add(elemCommande);
+    }
+
     @Override
     public String toString() {
-        return  "numCommande=" + numCommande + "\n idAdresseFacturation=" + idAdresseFacturation + "\n idAdresseLivraison=" + idAdresseLivraison + "\n idClient=" + idClient + "\n dateCommande=" + dateCommande + "\n datePaiementCommande=" + datePaiementCommande + "\n datePreparationCommande=" + datePreparationCommande + "\n dateExpeditionCommande=" + dateExpeditionCommande + "_\n dateAccuseReceptionCommande=" + dateAccuseReceptionCommande + "\n dateAnnulationCommande=" + dateAnnulationCommande + ",\n statutCommande=" + statutCommande + ",\n lignes de commandes="+ LignesDeCommande+"\n-----------------------------------\n";
+        return "numCommande=" + numCommande + "\n idAdresseFacturation=" + idAdresseFacturation + "\n idAdresseLivraison=" + idAdresseLivraison + "\n idClient=" + idClient + "\n dateCommande=" + dateCommande + "\n datePaiementCommande=" + datePaiementCommande + "\n datePreparationCommande=" + datePreparationCommande + "\n dateExpeditionCommande=" + dateExpeditionCommande + "_\n dateAccuseReceptionCommande=" + dateAccuseReceptionCommande + "\n dateAnnulationCommande=" + dateAnnulationCommande + ",\n statutCommande=" + statutCommande + ",\n lignes de commandes=" + LignesDeCommande + "\n-----------------------------------\n";
         // return "NumCommande = " + numCommande;
     }
 
@@ -186,7 +196,7 @@ public class Commande {
                 + "dateAnnulationCommande, "
                 + "statutCommande, "
                 + "ipCommande, "
-                + "nomLivreur, "
+                + "nomLivreur "
                 + ") "
                 + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
         try (
@@ -198,14 +208,17 @@ public class Commande {
             pstm.setInt(i++, getIdAdresseFacturation());
             pstm.setInt(i++, getIdAdresseLivraison());
             pstm.setInt(i++, getIdClient());
-            pstm.setDate(i++, (java.sql.Date.valueOf(getDateCommande())));
-            if (getDatePaiementCommande()==null){
+            pstm.setDate(i++, (java.sql.Date.valueOf(getDateCommande())));           /// sql dates a continuer
+            if (getDatePaiementCommande() == null) {
                 pstm.setNull(i++, java.sql.Types.DATE);
             } else {
                 pstm.setDate(i++, (java.sql.Date.valueOf(getDatePaiementCommande())));
             }
-            
-            pstm.setDate(i++, (java.sql.Date.valueOf(getDatePreparationCommande())));
+            if (getDatePreparationCommande() == null) {
+                pstm.setNull(i++, java.sql.Types.DATE);
+            } else {
+                pstm.setDate(i++, (java.sql.Date.valueOf(getDatePreparationCommande())));
+            }
             pstm.setDate(i++, (java.sql.Date.valueOf(getDateExpeditionCommande())));
             pstm.setDate(i++, (java.sql.Date.valueOf(getDateAccuseReceptionCommande())));
             pstm.setDate(i++, (java.sql.Date.valueOf(getDateAnnulationCommande())));
@@ -223,15 +236,15 @@ public class Commande {
             System.err.println("3) erreur sql : " + ex.getMessage());
         }
     }
-    
+
 // retourne une commande en prenant un numCommande en paramètre d'entrée
     /**
-     * 
+     *
      * @throws IdSQLException
-     * @throws SQLException 
+     * @throws SQLException
      */
     private void getCommandeFromSQL() throws IdSQLException, SQLException {
-        
+
         String req = "SELECT "
                 + "idAdresseFacturation"
                 + "      ,idAdresseLivraison"
@@ -257,7 +270,7 @@ public class Commande {
             pstm.executeQuery();
             ResultSet rs = pstm.getResultSet();
             if (rs.next()) {
-                
+
                 setIdAdresseFacturation(rs.getInt("idAdresseFacturation"));
                 setIdAdresseLivraison(rs.getInt("idAdresseLivraison"));
                 setIdClient(rs.getInt("idClient"));
@@ -290,11 +303,10 @@ public class Commande {
             } else {
                 throw new IdSQLException("Numéro de commande inconnu");
             }
-            
-        } catch (IdSQLException ex){
+
+        } catch (IdSQLException ex) {
             throw ex;
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             System.err.println("2) erreur sql : " + ex.getMessage());
             ex.printStackTrace();
             throw ex;
@@ -339,63 +351,149 @@ public class Commande {
         return carnetCommande;
     }
 
-    public void ajouterLdcCommande(LigneDeCommande elemCommande) {
-        this.LignesDeCommande.add(elemCommande);
-    }
-
 //insertion SQL de la ligne de commande en fonction du num commande
-    public void insererLdcCommandeSQL() {
+    public void insererLdcCommandeSQL() throws DuplicateConstraintSQLException, SQLException {
         /**
          * TODO verif numcommande existe dans la DB,
          *
          * POUR CHAQUE LIGNE DE MA COMMANDE
          */
-        for (LigneDeCommande L : LignesDeCommande) {
-            String req = "INSERT INTO LigneDeCommande( "
-                    + "numCommande, "
-                    + "isbnLivre, "
-                    + "quantiteLigneDeCommande, "
-                    + "PrixUnitaireHTLigneDeCommande, "
-                    + "TVALigneDeCommande, "
-                    + "reductionLigneDeCommande"
-                    + ")"
-                    + "VALUES(?,?,?,?,?,?)";
-            try (
-                    Connection cnt = new SqlManager().GetConnection();
-                    PreparedStatement pstm = cnt.prepareStatement(req, Statement.RETURN_GENERATED_KEYS);) {
+        Boolean hasInsert = false;
+        String req = "";
 
-                int i = 1;
-                pstm.setString(i++, L.getIsbnLivre());
-                pstm.setInt(i++, L.getQuantiteLigneDeCommande());
-                pstm.setFloat(i++, L.getPrixUnitaireHTLigneDeCommande());
-                pstm.setFloat(i++, L.getTVALigneDeCommande());
-                pstm.setFloat(i++, L.getReductionLigneDeCommande());
+        for (LigneDeCommande ligneCmd : LignesDeCommande) {
 
-                int j = pstm.executeUpdate();
-                System.out.println("nombre de lignes affectées : " + j);
-            } catch (SQLException ex) {
-                System.err.println("3) erreur sql : " + ex.getMessage());
+            if (((Integer) ligneCmd.getIdLigneDeCommande()).equals(0)) {
+                req = req + "INSERT INTO LigneDeCommande( "
+                        + "numCommande, "
+                        + "isbnLivre, "
+                        + "quantiteLigneDeCommande, "
+                        + "PrixUnitaireHTLigneDeCommande, "
+                        + "TVALigneDeCommande, "
+                        + "reductionLigneDeCommande"
+                        + ")"
+                        + "VALUES(?,?,?,?,?,?);";
+                hasInsert = true;
+            } else {
+                req = req + "UPDATE LigneDeCommande SET "
+                        + "     numCommande = ?, "
+                        + "     isbnLivre = ?, "
+                        + "     quantiteLigneDeCommande = ?, "
+                        + "     PrixUnitaireHTLigneDeCommande = ?, "
+                        + "     TVALigneDeCommande = ?, "
+                        + "     reductionLigneDeCommande = ?"
+                        + " WHERE "
+                        + "     idLigneDeCommande = ?;";
             }
         }
+
+        try (
+                Connection cnt = new SqlManager().GetConnection();
+                PreparedStatement pstm = cnt.prepareStatement(req);) {
+
+            int i = 1;
+            for (LigneDeCommande ligneCmd : LignesDeCommande) {
+
+                pstm.setInt(i++, getNumCommande());
+                pstm.setString(i++, ligneCmd.getIsbnLivre());
+                pstm.setInt(i++, ligneCmd.getQuantiteLigneDeCommande());
+                pstm.setFloat(i++, ligneCmd.getPrixUnitaireHTLigneDeCommande());
+                pstm.setFloat(i++, ligneCmd.getTVALigneDeCommande());
+                pstm.setFloat(i++, ligneCmd.getReductionLigneDeCommande());
+
+                if (!((Integer) ligneCmd.getIdLigneDeCommande()).equals(0)) {
+                    pstm.setInt(i++, ligneCmd.getIdLigneDeCommande());
+                }
+            }
+
+            pstm.executeUpdate();
+
+            if (hasInsert) {
+                getLdcFromSQL();
+            }
+
+        } catch (SQLException ex) {
+            if (ex.getErrorCode() == 2627) { // Violation de la contrainte UNIQUE KEY
+                throw new DuplicateConstraintSQLException(ex);
+            }
+            throw ex;
+        }
     }
-    
-//    public Vector getVectorCommande(){
-//        Vector v = new Vector();
-//        v.add(this);
-//        v.add(this.numCommande);
-//        v.add(this.idAdresseFacturation);
-//        v.add(this.idAdresseLivraison);
-//        v.add(this.idClient);
-//        v.add(this.dateCommande);
-//        v.add(this.datePaiementCommande);
-//        v.add(this.datePreparationCommande);
-//        v.add(this.dateExpeditionCommande);
-//        v.add(this.dateAccuseReceptionCommande);
-//        v.add(this.dateAnnulationCommande);
-//        v.add(this.statutCommande);
-//        v.add(this.ipCommande);
-//        v.add(this.LignesDeCommande);
-//        return v;
-//    }
+
+    private void getLdcFromSQL() throws SQLException {
+
+        LignesDeCommande.clear();
+
+        String req = "SELECT "
+                + "     idLigneDeCommande, "
+                + "     isbnLivre, "
+                + "     quantiteLigneDeCommande, "
+                + "     prixUnitaireHTLigneDeCommande, "
+                + "     TVALigneDeCommande, "
+                + "     reductionLigneDeCommande"
+                + "     "
+                + " FROM "
+                + "     LigneDeCommande "
+                + " WHERE "
+                + "     numCommande = ?";
+        //System.out.println(req);
+        try (
+                Connection cnt = new SqlManager().GetConnection();
+                PreparedStatement pstm = cnt.prepareStatement(req);) {
+
+            pstm.setInt(1, numCommande);
+
+            pstm.executeQuery();
+            ResultSet rs = pstm.getResultSet();
+            while (rs.next()) {
+                LigneDeCommande ldc = new LigneDeCommande();
+                ldc.setIdLigneDeCommande(rs.getInt("idLigneDeCommande"));
+                ldc.setIsbnLivre(rs.getString("isbnLivre"));
+                ldc.setQuantiteLigneDeCommande(rs.getInt("quantiteLigneDeCommande"));
+                ldc.setPrixUnitaireHTLigneDeCommande(rs.getFloat("prixUnitaireHTLigneDeCommande"));
+                ldc.setTVALigneDeCommande(rs.getFloat("TVALigneDeCommande"));
+                ldc.setReductionLigneDeCommande(rs.getFloat("reductionLigneDeCommande"));
+                LignesDeCommande.add(ldc);
+            }
+
+        }
+    }
+
+    public void updateCommandeSQL() {
+
+        String req = "UPDATE Commande "
+                + "SET "
+                + "datePreparationCommande =? , "
+                + "dateExpeditionCommande =? , "
+                + "dateAccuseReceptionCommande =? , "
+                + "statutCommande = ?  "
+                + " WHERE "
+                + "numCommande = ?";
+        try (
+                Connection cnt = new SqlManager().GetConnection();
+                PreparedStatement pstm = cnt.prepareStatement(req, Statement.RETURN_GENERATED_KEYS);) {
+
+            int i = 1;
+
+            pstm.setDate(i++, (java.sql.Date.valueOf(getDatePreparationCommande())));
+            if (getDateExpeditionCommande() == null){
+                pstm.setNull(i++, java.sql.Types.DATE);
+            } else {
+                pstm.setDate(i++, (java.sql.Date.valueOf(getDateExpeditionCommande())));
+            }
+            pstm.setDate(i++, (java.sql.Date.valueOf(getDateAccuseReceptionCommande())));
+            pstm.setString(i++, getStatutCommande());
+            pstm.setInt(i++, getNumCommande());
+
+            if (pstm.executeUpdate() > 0) {
+                ResultSet rs = pstm.getGeneratedKeys();
+                rs.next();
+                setNumCommande(rs.getInt(1));
+            }
+
+        } catch (SQLException ex) {
+            System.err.println("3) erreur sql : " + ex.getMessage());
+        }
+    }
 
 }

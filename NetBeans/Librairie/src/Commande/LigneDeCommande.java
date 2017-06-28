@@ -1,16 +1,17 @@
-
 package Commande;
 
-public class LigneDeCommande {  
-   
+public class LigneDeCommande {
+
     int idLigneDeCommande;
     String isbnLivre;
     int quantiteLigneDeCommande;
     float prixUnitaireHTLigneDeCommande;
     float TVALigneDeCommande;
     float reductionLigneDeCommande;
-    
-    public LigneDeCommande(){}
+
+    public LigneDeCommande() {
+        setIdLigneDeCommande(0);
+    }
 
     public int getIdLigneDeCommande() {
         return idLigneDeCommande;
@@ -35,7 +36,7 @@ public class LigneDeCommande {
     public float getReductionLigneDeCommande() {
         return reductionLigneDeCommande;
     }
-    
+
     public void setIdLigneDeCommande(int idLigneDeCommande) {
         this.idLigneDeCommande = idLigneDeCommande;
     }
@@ -62,9 +63,9 @@ public class LigneDeCommande {
 
     @Override
     public String toString() {
-        return "LigneDeCommande{" + "idLigneDeCommande=" + idLigneDeCommande + ", numCommande=" + ", isbnLivre=" + isbnLivre + ", quantiteLigneDeCommande=" + quantiteLigneDeCommande + ", prixUnitaireHTLigneDeCommande=" + prixUnitaireHTLigneDeCommande + ", TVALigneDeCommande=" + TVALigneDeCommande + ", reductionLigneDeCommande=" + reductionLigneDeCommande + '}';
+        return  "\n idLigneDeCommande=" + idLigneDeCommande + "\n numCommande=" + "\n isbnLivre=" + isbnLivre + "\n quantiteLigneDeCommande=" + quantiteLigneDeCommande + "\n prixUnitaireHTLigneDeCommande=" + prixUnitaireHTLigneDeCommande + "\n TVALigneDeCommande=" + TVALigneDeCommande + "\n reductionLigneDeCommande=" + reductionLigneDeCommande + "\n\n";
     }
-
-
-
 }
+
+    
+    
