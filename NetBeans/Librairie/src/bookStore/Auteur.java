@@ -71,7 +71,15 @@ public class Auteur {
                 setNomAuteur(rs.getString("nomAuteur"));
                 setPrenomAuteur(rs.getString("prenomAuteur"));
                 setDateNaissanceAuteur((rs.getDate("dateNaissanceAuteur")).toLocalDate());
-                setDateDecesAuteur((rs.getDate("dateDecesAuteur")).toLocalDate());
+                
+                if(rs.getDate("dateDecesAuteur") == null ){
+                    setDateDecesAuteur(null);
+                }    
+                else {
+                    setDateDecesAuteur((rs.getDate("dateDecesAuteur")).toLocalDate());
+                }
+                
+                
                 setNationaliteAuteur(rs.getString("nationaliteAuteur"));
                 setPhotoAuteur(rs.getString("photoAuteur"));
                 setBioAuteur(rs.getString("bioAuteur"));
@@ -86,9 +94,14 @@ public class Auteur {
 
     }
 
-    @Override
-    public String toString() {
+
+    public String toString2() {
         return "Auteur{" + "idAuteur=" + idAuteur + ",\n nomAuteur=" + nomAuteur + ",\n prenomAuteur=" + prenomAuteur + ",\n dateNaissanceAuteur=" + dateNaissanceAuteur + ",\n dateDecesAuteur=" + dateDecesAuteur + ",\n nationaliteAuteur=" + nationaliteAuteur + ",\n photoAuteur=" + photoAuteur + ",\n bioAuteur=" + bioAuteur + ",\n statutAuteur=" + statutAuteur + '}';
+    }
+    
+        @Override
+    public String toString() {
+        return  prenomAuteur + " " + nomAuteur;
     }
             
 
@@ -183,6 +196,42 @@ public class Auteur {
             }
         } catch (SQLException ex) {
             System.err.println("2) erreur sql : " + ex.getMessage());
+        } catch (Exception ex) {
+            Logger.getLogger(Auteur.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listeAuteur;
+    }
+    
+    public static ArrayList<Auteur> AffichageAuteur2() {
+
+        ArrayList<Auteur> listeAuteur = new ArrayList();
+
+        SqlManager sql1 = new SqlManager();
+        
+        String req = "select idAuteur"
+                    + " from Auteur "
+                    + " ORDER BY nomAuteur ";
+
+        try (Connection cnt = sql1.GetConnection();
+                PreparedStatement stm = cnt.prepareStatement(req);) {
+
+            
+
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                Auteur auteur = new Auteur(rs.getInt("idAuteur"));
+
+
+                //System.out.println("Auteur = " + auteur.getNomAuteur() + " " + auteur.getPrenomAuteur());
+
+                listeAuteur.add(auteur);
+            }
+            for (int i = 0; i < listeAuteur.size(); i++) {
+                listeAuteur.get(i).toString();
+            }
+        } catch (SQLException ex) {
+            System.err.println("2222) erreur sql : " + ex.getMessage());
         } catch (Exception ex) {
             Logger.getLogger(Auteur.class.getName()).log(Level.SEVERE, null, ex);
         }

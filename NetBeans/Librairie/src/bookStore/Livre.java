@@ -597,8 +597,9 @@ public class Livre {
             sql1 = new SqlManager();
        
         
-        String req = " delete "
-                + " from Livre"
+        String req = " Update Livre "
+                + " SET "
+                + " affichageLivre = 'false'"
                 + " where isbnLivre = ?";
         
         try (Connection cnt = sql1.GetConnection();
