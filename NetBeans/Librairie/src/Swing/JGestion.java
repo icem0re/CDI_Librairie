@@ -1,11 +1,10 @@
 
 package Swing;
 
-import Administration.Statut;
-import Utilisateur.Client;
+import Commande.GestionCommande;
 import java.awt.Frame;
-import java.util.ArrayList;
 import bookStore.jfBookStore;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -16,6 +15,9 @@ public class JGestion extends javax.swing.JFrame {
     private JClientMain jdClient;
     private jfBookStore jStore;
     private JEvent jEvent;
+    private JAdmin jEmploye;
+    private GestionCommande jCommande;
+    
     /**
      * Creates new form JGestion
      */
@@ -37,11 +39,11 @@ public class JGestion extends javax.swing.JFrame {
         jToolBar1 = new javax.swing.JToolBar();
         jButtonGestionClients = new javax.swing.JButton();
         jButtonGestionLivres = new javax.swing.JButton();
-        jButtonGestionEvenements = new javax.swing.JButton();
         jButtonGestionEditeurs = new javax.swing.JButton();
         jButtonGestionAuteurs = new javax.swing.JButton();
-        jButtonGestionCommandes = new javax.swing.JButton();
         jButtonGestionThematiques = new javax.swing.JButton();
+        jButtonGestionCommandes = new javax.swing.JButton();
+        jButtonGestionEvenements = new javax.swing.JButton();
         jButtonGestionEmployes = new javax.swing.JButton();
         jButtonFermer = new javax.swing.JButton();
 
@@ -74,6 +76,50 @@ public class JGestion extends javax.swing.JFrame {
         });
         jToolBar1.add(jButtonGestionLivres);
 
+        jButtonGestionEditeurs.setText("Gestion Editeurs");
+        jButtonGestionEditeurs.setFocusable(false);
+        jButtonGestionEditeurs.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButtonGestionEditeurs.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButtonGestionEditeurs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonGestionEditeursActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButtonGestionEditeurs);
+
+        jButtonGestionAuteurs.setText("Gestion Auteurs");
+        jButtonGestionAuteurs.setFocusable(false);
+        jButtonGestionAuteurs.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButtonGestionAuteurs.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButtonGestionAuteurs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonGestionAuteursActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButtonGestionAuteurs);
+
+        jButtonGestionThematiques.setText("Gestion Thématiques");
+        jButtonGestionThematiques.setFocusable(false);
+        jButtonGestionThematiques.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButtonGestionThematiques.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButtonGestionThematiques.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonGestionThematiquesActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButtonGestionThematiques);
+
+        jButtonGestionCommandes.setText("Gestion Commandes");
+        jButtonGestionCommandes.setFocusable(false);
+        jButtonGestionCommandes.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButtonGestionCommandes.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButtonGestionCommandes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonGestionCommandesActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButtonGestionCommandes);
+
         jButtonGestionEvenements.setText("Gestion Evenements");
         jButtonGestionEvenements.setFocusable(false);
         jButtonGestionEvenements.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -85,34 +131,15 @@ public class JGestion extends javax.swing.JFrame {
         });
         jToolBar1.add(jButtonGestionEvenements);
 
-        jButtonGestionEditeurs.setText("Gestion Editeurs");
-        jButtonGestionEditeurs.setFocusable(false);
-        jButtonGestionEditeurs.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButtonGestionEditeurs.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButtonGestionEditeurs);
-
-        jButtonGestionAuteurs.setText("Gestion Auteurs");
-        jButtonGestionAuteurs.setFocusable(false);
-        jButtonGestionAuteurs.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButtonGestionAuteurs.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButtonGestionAuteurs);
-
-        jButtonGestionCommandes.setText("Gestion Commandes");
-        jButtonGestionCommandes.setFocusable(false);
-        jButtonGestionCommandes.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButtonGestionCommandes.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButtonGestionCommandes);
-
-        jButtonGestionThematiques.setText("Gestion Thématiques");
-        jButtonGestionThematiques.setFocusable(false);
-        jButtonGestionThematiques.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButtonGestionThematiques.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButtonGestionThematiques);
-
         jButtonGestionEmployes.setText("Gestion Employés");
         jButtonGestionEmployes.setFocusable(false);
         jButtonGestionEmployes.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButtonGestionEmployes.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButtonGestionEmployes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonGestionEmployesActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jButtonGestionEmployes);
 
         getContentPane().add(jToolBar1);
@@ -172,7 +199,7 @@ public class JGestion extends javax.swing.JFrame {
     private void jButtonGestionEvenementsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGestionEvenementsActionPerformed
         // TODO add your handling code here:
         
-         if(jEvent==null){
+        if(jEvent==null){
            jEvent=new JEvent();
            jEvent.setVisible(true);          
         } else if (!jEvent.isVisible()){
@@ -184,6 +211,72 @@ public class JGestion extends javax.swing.JFrame {
             jEvent.toFront();
         }
     }//GEN-LAST:event_jButtonGestionEvenementsActionPerformed
+
+    private void jButtonGestionEmployesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGestionEmployesActionPerformed
+        if(jEmploye==null){
+           jEmploye=new JAdmin();
+           jEmploye.setVisible(true);          
+        } else if (!jEmploye.isVisible()){
+            jEmploye=new JAdmin();
+            jEmploye.setVisible(true);           
+        }else if(jEmploye.getState()==Frame.ICONIFIED){
+            jEmploye.setState(Frame.NORMAL);
+        }else{
+            jEmploye.toFront();
+        }
+    }//GEN-LAST:event_jButtonGestionEmployesActionPerformed
+
+    private void jButtonGestionCommandesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGestionCommandesActionPerformed
+       if(jCommande==null){
+           jCommande=new GestionCommande();
+           jCommande.setVisible(true);          
+        } else if (!jCommande.isVisible()){
+            jCommande=new GestionCommande();
+            jCommande.setVisible(true);           
+        }else if(jCommande.getState()==Frame.ICONIFIED){
+            jCommande.setState(Frame.NORMAL);
+        }else{
+            jCommande.toFront();
+        }
+    }//GEN-LAST:event_jButtonGestionCommandesActionPerformed
+
+    private void jButtonGestionAuteursActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGestionAuteursActionPerformed
+        if(jStore==null){
+           jStore = new jfBookStore();
+           jStore.editAuteur();
+           jStore.setVisible(true);          
+        } else if (!jStore.isVisible()){
+            jStore=new jfBookStore();
+           jStore.editAuteur();
+            jStore.setVisible(true);           
+        }else if(jStore.getState()==Frame.ICONIFIED){
+            jStore.setState(Frame.NORMAL);
+        }else{
+            jStore.toFront();
+        }
+        
+    }//GEN-LAST:event_jButtonGestionAuteursActionPerformed
+
+    private void jButtonGestionEditeursActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGestionEditeursActionPerformed
+        if(jStore==null){
+           jStore = new jfBookStore();
+           jStore.editEditeur();
+           jStore.setVisible(true);
+        } else if (!jStore.isVisible()){
+            jStore=new jfBookStore();
+            jStore.editEditeur();
+            jStore.setVisible(true);           
+        }else if(jStore.getState()==Frame.ICONIFIED){
+            jStore.setState(Frame.NORMAL);
+        }else{
+            jStore.toFront();
+        }
+    }//GEN-LAST:event_jButtonGestionEditeursActionPerformed
+
+    private void jButtonGestionThematiquesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGestionThematiquesActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this, "Peut-être un jour ^^ ?", "Oups...", JOptionPane.QUESTION_MESSAGE);
+    }//GEN-LAST:event_jButtonGestionThematiquesActionPerformed
 
     /**
      * @param args the command line arguments

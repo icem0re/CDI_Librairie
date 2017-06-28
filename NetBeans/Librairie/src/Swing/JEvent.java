@@ -36,6 +36,7 @@ public class JEvent extends javax.swing.JFrame {
 
     private Action buttonClicked = new AbstractAction()
     {
+        @Override
         public void actionPerformed(ActionEvent e)
         {
             // get affected table
@@ -74,7 +75,7 @@ public class JEvent extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable = new javax.swing.JTable();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(840, 200));
 
         jTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -128,6 +129,7 @@ public class JEvent extends javax.swing.JFrame {
             @Override
             public boolean isCellEditable(int row, int column) {
                //all cells false
+               
                if (column == jTable.getColumnModel().getColumnCount()-1){
                    return true;
                }

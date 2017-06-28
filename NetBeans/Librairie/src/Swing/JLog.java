@@ -109,7 +109,7 @@ public class JLog extends javax.swing.JFrame {
 
         try {
             if (Employe.exists(jTextFieldLogin.getText(), SqlManager.SqlManager.encodeString(jTextFieldMdp.getText()))) {
-                System.out.println("OK");
+                
                 if (jdGestion == null) {
                     jdGestion = new JGestion();
                     jdGestion.setVisible(true);
@@ -121,9 +121,9 @@ public class JLog extends javax.swing.JFrame {
                 } else {
                     jdGestion.toFront();
                 }
+                this.setVisible(false);
                
             } else {
-                System.out.println("NON OK");
                 try {
                 throw new InvalidInputException("mot de passe et/ou login faux");
             } catch (InvalidInputException ex) {

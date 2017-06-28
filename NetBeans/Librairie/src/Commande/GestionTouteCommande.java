@@ -33,10 +33,11 @@ public class GestionTouteCommande extends javax.swing.JFrame {
         this.monClient = monClient;
         this.gc = gc;
         initComponents();
-        jTable1 = new JTable(){
-             public boolean isCellEditable(int row, int col){
-return false;
-        }};
+//        jTable1 = new JTable(){
+//                public boolean isCellEditable(int row, int col){
+//                    return false;
+//                }
+//            };
         jTable1.setModel(initTouteCommande());
         jTable1.getColumnModel().getColumn(0).setMinWidth(0);
         jTable1.getColumnModel().getColumn(0).setMaxWidth(0);
@@ -48,7 +49,13 @@ return false;
 
     private DefaultTableModel initTouteCommande() throws SQLException {
 
-        DefaultTableModel myTableModel = new DefaultTableModel();
+        DefaultTableModel myTableModel = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+               //all cells false
+               return false;
+            }
+        };
 
         myTableModel.addColumn("");
         myTableModel.addColumn("Numéro Commande");

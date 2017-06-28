@@ -173,7 +173,7 @@ public class Auteur {
                     + " on a.idAuteur = r.idAuteur "
                     + " join Livre l"
                     + " on r.isbnLivre = l.isbnLivre"
-                    + " AND isbnLIvre = ? "
+                    + " AND l.isbnLIvre = ? "
                     + " ORDER BY nomAuteur ";
 
         try (Connection cnt = sql1.GetConnection();

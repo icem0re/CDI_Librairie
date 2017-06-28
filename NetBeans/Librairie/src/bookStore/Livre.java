@@ -5,6 +5,7 @@
  */
 package bookStore;
 
+import Exception.InvalidSearchException;
 import SqlManager.SqlManager;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,7 +41,6 @@ public class Livre {
     
     private ArrayList<Auteur> mesAuteur;
     private ArrayList<Thematique> mesThematique;
-    private DefaultMutableTreeNode root = new DefaultMutableTreeNode("Bibliothèque");
 
     public Livre() {
         editeur = new Editeur();
@@ -49,12 +49,14 @@ public class Livre {
     }
 
     public Livre(String isbnLivre) throws SQLException, Exception{
+        this();
         setIsbnLivre(isbnLivre);
         getSqlData();
         
     }
     
     public Livre(String titreLivre, String isbnLivre) throws Exception{
+        this();
         setTitreLivre(titreLivre);
         setIsbnLivre(isbnLivre);
         selectUnLivre();
@@ -99,12 +101,17 @@ public class Livre {
 
                 setIsbnLivre(rs.getString("isbnLivre"));
                 setNomTVA(rs.getString("nomTVA"));
-                    Editeur newEditeur = new Editeur(rs.getString("nomEditeur"));
-                    newEditeur.getSqlData();
+                
+                Editeur newEditeur = new Editeur(rs.getString("nomEditeur"));
                 setEditeur(newEditeur);
                    
-                    Thematique newThematique = new Thematique(rs.getString("idSousThematique"));;
+                try{
+                    Thematique newThematique = new Thematique(rs.getString("idSousThematique"));
                     mesThematique.add(newThematique);
+                } catch (Exception ex){
+                    
+                }
+                
                 setTitreLivre(rs.getString("titreLivre"));
                 setSousTitreLivre(rs.getString("sousTitreLivre"));
                 setDateParutionLivre((rs.getDate("dateParutionLivre")).toLocalDate());
@@ -116,7 +123,7 @@ public class Livre {
                 setAffichageLivre(rs.getBoolean("affichageLivre"));
                 
             }
-            mesAuteur = Auteur.AffichageAuteur(isbnLivre);
+            mesAuteur = Auteur.AffichageAuteur(getIsbnLivre());
             for (int i = 0; i < mesThematique.size(); i++) {
                 mesThematique = Thematique.AffichageSousThematique(Thematique.AffichageThematique().get(i).getNomThematique());
             }
@@ -428,7 +435,7 @@ public class Livre {
         return Biblio;
     }
    
-    public static ArrayList<Livre> searchLivres(String byISBN, 
+     public static ArrayList<Livre> searchLivres(String byISBN, 
             String byTitre, 
             String bySousTitre, 
             String byEditeur, 
@@ -440,6 +447,13 @@ public class Livre {
         
         String req = "SELECT "
                     + "     l.isbnLivre, "
+                    + "     l.titreLivre, "
+                    + "     e.nomEditeur, "
+                    + "     e.logoEditeur, "
+                    + "     e.statutEditeur, "
+                    + "     a.nomAuteur, "
+                    + "     a.prenomAuteur,"
+                    + "     a.idAuteur"
                     + " FROM "
                     + "     LIVRE l "
                     + " JOIN Editeur e "
@@ -484,7 +498,7 @@ public class Livre {
         }
         
         if (!hasValidSearch){
-            throw new SQLException("Merci de fournir moins un champs de recherche");
+            throw new InvalidSearchException("Merci de fournir moins un champs de recherche");
         }
         
         // Nettoyage fin de requete
@@ -496,36 +510,48 @@ public class Livre {
         //System.out.println(req);
         
         try (Connection cnt = new SqlManager().GetConnection();
-                PreparedStatement stm = cnt.prepareStatement(req);
+                PreparedStatement pstm = cnt.prepareStatement(req);
             ) 
         {
 
             int i = 1;
             if (byNomAuteur != null) {
-                stm.setString(i++, byNomAuteur);
+                pstm.setString(i++, byNomAuteur);
             }
             if (byPrenomAuteur != null) {
-                stm.setString(i++, byPrenomAuteur);
+                pstm.setString(i++, byPrenomAuteur);
             }
             if (byISBN != null) {
-                stm.setString(i++, byISBN);
+                pstm.setString(i++, byISBN);
             }
             if (byTitre != null) {
-                stm.setString(i++, byTitre);
+                pstm.setString(i++, byTitre);
             }
             if (bySousTitre != null) {
-                stm.setString(i++, bySousTitre);
+                pstm.setString(i++, bySousTitre);
             }
             if (byEditeur != null) {
-                stm.setString(i++, byEditeur);
+                pstm.setString(i++, byEditeur);
             }
 
-            ResultSet rs = stm.executeQuery();
+            ResultSet rs = pstm.executeQuery();
 
             while (rs.next()) {
-                Livre livre = new Livre(rs.getString("isbnLivre"));
-                Biblio.add(livre);
+//                Livre livre = new Livre(rs.getString("isbnLivre"));
+//                Biblio.add(livre);
+                
+                Livre livre = new Livre();
 
+                Auteur auteur = new Auteur(rs.getInt("idAuteur"));
+                auteur.setPrenomAuteur(rs.getString("prenomAuteur"));
+                auteur.setNomAuteur(rs.getString("nomAuteur"));
+                livre.setIsbnLivre(rs.getString("isbnLivre"));
+                Editeur newEditeur = new Editeur(rs.getString("nomEditeur"));
+                newEditeur.setLogoEditeur(rs.getString("logoEditeur"));
+                newEditeur.setStatutEditeur(rs.getString("statutEditeur"));
+                livre.setEditeur(newEditeur);
+                livre.setTitreLivre(rs.getString("titreLivre"));
+                Biblio.add(livre);
             }
         } catch (SQLException ex) {
             throw ex;
@@ -534,7 +560,6 @@ public class Livre {
         }
         return Biblio;
     }
-
     public static void main(String[] args) throws SQLException, Exception {
         for (Livre book : Livre.searchLivres(null, null, null, null, "a*", null)){
             System.out.println(book);

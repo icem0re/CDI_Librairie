@@ -50,7 +50,7 @@ public class GestionCommande extends javax.swing.JFrame {
         jRadioButtonNumCmd = new javax.swing.JRadioButton();
         jRadioButtonIdClient = new javax.swing.JRadioButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(null);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N

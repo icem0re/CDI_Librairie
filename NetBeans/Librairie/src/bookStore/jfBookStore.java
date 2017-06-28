@@ -724,7 +724,7 @@ public class jfBookStore extends javax.swing.JFrame {
 
         jFrame2.getContentPane().add(jDesktopPane2, java.awt.BorderLayout.CENTER);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
         setLocation(new java.awt.Point(0, 0));
         getContentPane().setLayout(null);
@@ -1439,6 +1439,23 @@ public class jfBookStore extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton6ActionPerformed
 
+    public void editEditeur(){
+        this.setVisible(true);
+        jFrame1.setSize(300, 500);
+        jFrame1.setLocation(550, 200);
+        jFrame1.setVisible(true);
+        jButton4.setEnabled(false);
+        jCEditeur.setModel(initModelEditeur());
+    }
+    
+	
+    public void editAuteur(){
+        this.setVisible(true);
+        jFrame2.setSize(600, 500);
+        jFrame2.setLocation(550, 200);
+        jFrame2.setVisible(true);
+    }
+    
     private void jReffAuteurActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jReffAuteurActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jReffAuteurActionPerformed

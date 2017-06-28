@@ -32,7 +32,6 @@ public class Thematique {
     public Thematique(String idSousThematique) throws Exception {
         this.idSousThematique = idSousThematique;
         getSqlData();
-
     }
 
     public Thematique(String nomThematique, String idSousThematique, String nomSousThematique, String descriptionSousThematique) {
