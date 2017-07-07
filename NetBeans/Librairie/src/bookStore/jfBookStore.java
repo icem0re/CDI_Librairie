@@ -5,6 +5,8 @@
  */
 package bookStore;
 
+import Administration.Statut;
+import Administration.StatutEditeur;
 import SqlManager.SqlManager;
 import com.toedter.calendar.JCalendar;
 import java.awt.image.BufferedImage;
@@ -30,6 +32,7 @@ import javax.imageio.ImageIO;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -48,134 +51,76 @@ public class jfBookStore extends javax.swing.JFrame {
     public jfBookStore() {
         initComponents();
     }
-    
+
     public class jif01 extends javax.swing.JInternalFrame {
 
-    private int compteur;
-    
-    public jif01() {
-        initComponents();
-        
-        this.setTitle("fenetre "+ compteur);
-        
-        setBounds(10*compteur,10*(compteur++),547,390);
-        
-        
+        private int compteur;
+
+        public jif01() {
+            initComponents();
+
+            this.setTitle("fenetre " + compteur);
+
+            setBounds(10 * compteur, 10 * (compteur++), 547, 390);
+
+        }
     }
-    }
-    
-    
+
     private DefaultComboBoxModel initModelSousThematique() {
         return new DefaultComboBoxModel(initSousThematique());
     }
 
-    private DefaultComboBoxModel initModelSousThematique2() {
-        return new DefaultComboBoxModel(initSousThematique2());
-    }
 
     private DefaultComboBoxModel initModelThematique() {
         return new DefaultComboBoxModel(initThematique());
     }
-    
-    private DefaultComboBoxModel initModelEditeur(){
+
+    private DefaultComboBoxModel initModelEditeur() {
         return new DefaultComboBoxModel(initEditeur());
     }
-    
-    private DefaultComboBoxModel initModelStatutEditeur(){
+
+    private DefaultComboBoxModel initModelStatutEditeur() {
         return new DefaultComboBoxModel(initStatutEditeur());
     }
-    
-    private DefaultComboBoxModel initModelAuteur(){
+
+    private DefaultComboBoxModel initModelAuteur() {
         return new DefaultComboBoxModel(initAuteur());
     }
-    
-    private Vector initStatutEditeur(){
+
+    private Vector initStatutEditeur() {
         Vector v = new Vector();
-        ArrayList<Editeur> mesEditeurs = Editeur.AffichageStatutEditeur();        
-        String lastEditeur = null;
-        for (int i = 0; i < mesEditeurs.size(); i++) {
-            if(lastEditeur == null){
-                lastEditeur = mesEditeurs.get(i).getStatutEditeur();
-                Editeur editeur = null;
-                try {
-                    editeur = new Editeur(lastEditeur);
-                } catch (Exception ex) {
-                    Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                try {
-                    editeur.getSqlData();
-                } catch (Exception ex) {
-                    Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                v.add(editeur);
+        try {
+
+            for (Statut monstat : StatutEditeur.getStatut()) {
+                v.add(monstat);
             }
-            if (!lastEditeur.equalsIgnoreCase(mesEditeurs.get(i).getStatutEditeur())) {
-                lastEditeur = mesEditeurs.get(i).getStatutEditeur();
-                Editeur editeur = null;
-                try {
-                    editeur = new Editeur(lastEditeur);
-                } catch (Exception ex) {
-                    Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                try {
-                    editeur.getSqlData();
-                } catch (Exception ex) {
-                    Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                v.add(editeur);
-            }
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "error", JOptionPane.ERROR_MESSAGE);
+            return v;
         }
-        
-        
-        return v;
-    }
-    
-    private Vector initEditeur(){
-        Vector v = new Vector();
-        ArrayList<Editeur> mesEditeurs = Editeur.AffichageEditeur();
-        
-        String lastEditeur = null;
-        for (int i = 0; i < mesEditeurs.size(); i++) {
-            if(lastEditeur == null){
-                lastEditeur = mesEditeurs.get(i).getNomEditeur();
-                Editeur editeur = null;
-                try {
-                    editeur = new Editeur(lastEditeur);
-                } catch (Exception ex) {
-                    Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                try {
-                    editeur.getSqlData();
-                } catch (Exception ex) {
-                    Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                v.add(editeur);
-            }
-            if (!lastEditeur.equalsIgnoreCase(mesEditeurs.get(i).getNomEditeur())) {
-                lastEditeur = mesEditeurs.get(i).getNomEditeur();
-                Editeur editeur = null;
-                try {
-                    editeur = new Editeur(lastEditeur);
-                } catch (Exception ex) {
-                    Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                try {
-                    editeur.getSqlData();
-                } catch (Exception ex) {
-                    Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                v.add(editeur);
-            }
-        }
-        
-        
         return v;
     }
 
-    private Vector initAuteur(){
+    private Vector initEditeur() {
+        Vector v = new Vector();
+
+        try {
+            for (Editeur edi : Editeur.AffichageEditeur()) {
+                v.add(edi);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "error", JOptionPane.ERROR_MESSAGE);
+            return v;
+        }
+
+        return v;
+    }
+
+    private Vector initAuteur() {
         Vector v = new Vector();
         ArrayList<Auteur> mesAuteurs = Auteur.AffichageAuteur2();
-        
+
         String lastNomAuteur = null;
         String lastPrenomAuteur = null;
         String lastBioAuteur = null;
@@ -183,10 +128,9 @@ public class jfBookStore extends javax.swing.JFrame {
         LocalDate lastDecesAuteur = null;
         String lastNationaliteAuteur = null;
         String lastPhotoAuteur = null;
-        
-        
+
         for (int i = 0; i < mesAuteurs.size(); i++) {
-            if(lastNomAuteur == null){
+            if (lastNomAuteur == null) {
                 lastNomAuteur = mesAuteurs.get(i).getNomAuteur();
                 lastPrenomAuteur = mesAuteurs.get(i).getPrenomAuteur();
                 lastBioAuteur = mesAuteurs.get(i).getBioAuteur();
@@ -233,90 +177,64 @@ public class jfBookStore extends javax.swing.JFrame {
                     auteur.setNationaliteAuteur(lastNationaliteAuteur);
                     auteur.setPhotoAuteur(lastPhotoAuteur);
                 } catch (Exception ex) {
-                    Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), "error", JOptionPane.ERROR_MESSAGE);
                 }
                 try {
                     auteur.getSqlData();
                 } catch (Exception ex) {
-                    Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), "error", JOptionPane.ERROR_MESSAGE);
                 }
                 v.add(auteur);
             }
         }
-        
-        
+
         return v;
     }
+
     private Vector initThematique() {
         Vector v = new Vector();
-        ArrayList<Thematique> mesThematique = Thematique.AffichageThematique();
-        String lastThematique = null;
-        for (int i = 0; i < mesThematique.size(); i++) {
-            if (lastThematique == null) {
-                lastThematique = mesThematique.get(i).getNomThematique();
-                v.add(lastThematique);
+        try {
+            ArrayList<Thematique> mesThematique = Thematique.AffichageThematique();
+            String lastThematique = null;
+            for (int i = 0; i < mesThematique.size(); i++) {
+                if (lastThematique == null) {
+                    lastThematique = mesThematique.get(i).getNomThematique();
+                    v.add(lastThematique);
+                }
+                if (!lastThematique.equalsIgnoreCase(mesThematique.get(i).getNomThematique())) {
+                    lastThematique = mesThematique.get(i).getNomThematique();
+                    v.add(lastThematique);
+                }
             }
-            if (!lastThematique.equalsIgnoreCase(mesThematique.get(i).getNomThematique())) {
-                lastThematique = mesThematique.get(i).getNomThematique();
-                v.add(lastThematique);
-            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "error", JOptionPane.ERROR_MESSAGE);
+            return v;
         }
         return v;
-    }  
+    }
 
     private Vector initSousThematique() {
         Vector v = new Vector();
-        ArrayList<Thematique> mesThematique = null;
-        jCThematique.getActionListeners();
 
-        if (mesThematique == null) {
-            mesThematique = Thematique.AffichageThematique();
-            mesThematique = Thematique.AffichageSousThematique(mesThematique.get(0).getNomThematique());
-            String lastThematique = null;
-            for (int i = 0; i < mesThematique.size(); i++) {
-                if (lastThematique == null) {
-                    lastThematique = mesThematique.get(i).getNomSousThematique();
-                    v.add(lastThematique);
+        try {
 
+            
+            if (jCThematique.getSelectedItem() != null) {
+                String nomThematique = ((Thematique) jCThematique.getSelectedItem()).getNomThematique();
+
+                for (Thematique mesTheme : Thematique.AffichageSousThematique(nomThematique)) {
+                    v.add(mesTheme);
                 }
-                if (!lastThematique.equalsIgnoreCase(mesThematique.get(i).getNomSousThematique())) {
-                    lastThematique = mesThematique.get(i).getNomSousThematique();
-                    v.add(lastThematique);
-
-                }
-
             }
 
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "error", JOptionPane.ERROR_MESSAGE);
+            return v;
         }
 
         return v;
     }
 
-    private Vector initSousThematique2() {
-        Vector v = new Vector();
-        ArrayList<Thematique> mesThematique = Thematique.AffichageSousThematique(jCThematique.getSelectedItem().toString());
-        jCThematique.getActionListeners();
-
-        if (mesThematique != null) {
-            String lastThematique = null;
-            for (int i = 0; i < mesThematique.size(); i++) {
-                if (lastThematique == null) {
-                    lastThematique = mesThematique.get(i).getNomSousThematique();
-                    v.add(lastThematique);
-
-                }
-                if (!lastThematique.equalsIgnoreCase(mesThematique.get(i).getNomSousThematique())) {
-                    lastThematique = mesThematique.get(i).getNomSousThematique();
-                    v.add(lastThematique);
-
-                }
-
-            }
-
-        }
-
-        return v;
-    }
 
     private DefaultTreeModel initModelBookStore() {
         return new DefaultTreeModel(initTreeCD());
@@ -385,8 +303,7 @@ public class jfBookStore extends javax.swing.JFrame {
                     lastAuteur = (rs.getString("nomAuteur") + " " + rs.getString("prenomAuteur"));
                     tnSousThematique.add(tnAuteur = new DefaultMutableTreeNode(lastAuteur));
                 }
-                Livre livre = new Livre(rs.getString("titreLivre"), rs.getString("isbnLivre"));
-                livre.selectUnLivre();
+                Livre livre = new Livre(rs.getString("isbnLivre"));
                 //String s = "TITRE : " + livre.getTitreLivre() + "\t ISBN : " + livre.getIsbnLivre();
                 tnAuteur.add(new DefaultMutableTreeNode(livre));
             }
@@ -397,7 +314,7 @@ public class jfBookStore extends javax.swing.JFrame {
             System.err.println("Oops:SQL:" + ex.getErrorCode() + ":" + ex.getMessage());
             return root;
         } catch (Exception ex) {
-            Logger.getLogger(jfBookSt0re.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
         }
         System.out.println("Done!");
 
@@ -984,7 +901,7 @@ public class jfBookStore extends javax.swing.JFrame {
                 jRadioButton2.setSelected(true);
                 jRadioButton1.setEnabled(false);
                 jRadioButton3.setEnabled(false);
-                
+
             } catch (Exception ex) {
                 Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -998,9 +915,7 @@ public class jfBookStore extends javax.swing.JFrame {
     }//GEN-LAST:event_jCSousThematiqueActionPerformed
 
     private void jCThematiqueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCThematiqueActionPerformed
-        ArrayList<Thematique> mesThematique = Thematique.AffichageThematique();
-        mesThematique = Thematique.AffichageSousThematique(jCThematique.getSelectedItem().toString().trim());
-        jCSousThematique.setModel(initModelSousThematique2());
+        jCSousThematique.setModel(initModelSousThematique());
     }//GEN-LAST:event_jCThematiqueActionPerformed
 
     private void jTreeLivreMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTreeLivreMouseReleased
@@ -1018,9 +933,9 @@ public class jfBookStore extends javax.swing.JFrame {
         chooser.setDialogTitle("Menu");
         chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         chooser.setAcceptAllFileFilterUsed(false);
-        
+
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            System.out.println("getSelectedFile() : "+  chooser.getSelectedFile());
+            System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
             File f = chooser.getSelectedFile();
             BufferedImage im = null;
             try {
@@ -1028,15 +943,14 @@ public class jfBookStore extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
             }
-            jLImage.setIcon(new ImageIcon(im.getScaledInstance(jPanel1.getWidth(), jPanel1.getHeight(),0)));
+            jLImage.setIcon(new ImageIcon(im.getScaledInstance(jPanel1.getWidth(), jPanel1.getHeight(), 0)));
             //Redimensionner l'image a la taille du jPanel1
             jPanel1.add(jLImage);
-            
-        }
-        else {
+
+        } else {
             System.out.println("Pas de fichier séléctioné ");
         }
-        
+
 
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -1050,7 +964,7 @@ public class jfBookStore extends javax.swing.JFrame {
         jtPrixHTLivre.setEditable(false);
         jtResumeLivre.setEditable(false);
         jtSousTitreLivre.setEditable(false);
-        jtTitreLivre.setEditable(false);  
+        jtTitreLivre.setEditable(false);
     }//GEN-LAST:event_jRadioButton1ActionPerformed
 
     private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
@@ -1076,16 +990,16 @@ public class jfBookStore extends javax.swing.JFrame {
         jtPrixHTLivre.setEditable(false);
         jtResumeLivre.setEditable(false);
         jtSousTitreLivre.setEditable(false);
-        jtTitreLivre.setEditable(false);  
+        jtTitreLivre.setEditable(false);
     }//GEN-LAST:event_jRadioButton3ActionPerformed
 
     private void jFileChooser1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jFileChooser1ActionPerformed
-        
+
     }//GEN-LAST:event_jFileChooser1ActionPerformed
 
-    
+
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if(jRadioButton1.isSelected()){
+        if (jRadioButton1.isSelected()) {
             Livre livre = new Livre();
             try {
                 livre.setIsbnLivre(jtIsbn.getText());
@@ -1106,7 +1020,7 @@ public class jfBookStore extends javax.swing.JFrame {
             }
             livre.setEditeur(editeur);
             livre.setDateParutionLivre(date2LocalDate(jDateChooserLivre.getDate()));
-            
+
             livre.setResumeLivre(jtResumeLivre.getText());
             livre.setExtraitLivre(jtExtraitLivre.getText());
             livre.setImageLivre(jLImage.getText());
@@ -1131,10 +1045,14 @@ public class jfBookStore extends javax.swing.JFrame {
                 Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
             }
             livre.setAffichageLivre(true);
-            livre.CreerLivre();
+            try {
+                livre.CreerLivre();
+            } catch (SQLException ex) {
+                Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
+            }
             jTreeLivre.setModel(initModelBookStore());
         }
-        if(jRadioButton2.isSelected()){
+        if (jRadioButton2.isSelected()) {
             Livre livre = new Livre();
             try {
                 livre.setIsbnLivre(jtIsbn.getText());
@@ -1164,8 +1082,7 @@ public class jfBookStore extends javax.swing.JFrame {
                 Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
             }
             livre.setEditeur(editeur);
-            
-            
+
             livre.setDateParutionLivre(date2LocalDate(jDateChooserLivre.getDate()));
             livre.setResumeLivre(jtResumeLivre.getText());
             livre.setExtraitLivre(jtExtraitLivre.getText());
@@ -1188,21 +1105,25 @@ public class jfBookStore extends javax.swing.JFrame {
             }
             jTreeLivre.setModel(initModelBookStore());
         }
-        if(jRadioButton3.isSelected()){
-            
+        if (jRadioButton3.isSelected()) {
+
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private java.time.LocalDate date2LocalDate(java.util.Date date){
-        if (date==null){ return null;}
+    private java.time.LocalDate date2LocalDate(java.util.Date date) {
+        if (date == null) {
+            return null;
+        }
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
-    
-    private java.util.Date localDate2Date(java.time.LocalDate localDate){
-        if (localDate==null){ return null;}
+
+    private java.util.Date localDate2Date(java.time.LocalDate localDate) {
+        if (localDate == null) {
+            return null;
+        }
         return java.util.Date.from((localDate).atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
-    
+
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
 
         jFrame1.setSize(300, 500);
@@ -1210,12 +1131,12 @@ public class jfBookStore extends javax.swing.JFrame {
         jFrame1.setVisible(true);
         jButton4.setEnabled(false);
         jCEditeur.setModel(initModelEditeur());
-        
-    
+
+
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        if(jRadioButton4.isSelected()){
+        if (jRadioButton4.isSelected()) {
             Editeur editeur = new Editeur();
             try {
                 editeur.setNomEditeur(jTnomEditeur2.getText());
@@ -1228,11 +1149,15 @@ public class jfBookStore extends javax.swing.JFrame {
             } catch (Exception ex) {
                 Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
             }
-            editeur.CreerEditeur();
+            try {
+                editeur.CreerEditeur();
+            } catch (SQLException ex) {
+                Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
+            }
             jFrame1.setVisible(false);
-            
+
         }
-        if(jRadioButton5.isSelected()){
+        if (jRadioButton5.isSelected()) {
             Editeur editeur = new Editeur();
             try {
                 editeur.setNomEditeur(jTnomEditeur2.getText());
@@ -1251,9 +1176,9 @@ public class jfBookStore extends javax.swing.JFrame {
                 Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
             }
             jFrame1.setVisible(false);
-            
+
         }
-        if(jRadioButton6.isSelected()){
+        if (jRadioButton6.isSelected()) {
             Editeur editeur = new Editeur();
             try {
                 editeur.setNomEditeur(jTnomEditeur2.getText());
@@ -1272,9 +1197,9 @@ public class jfBookStore extends javax.swing.JFrame {
                 Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
             }
             jFrame1.setVisible(false);
-            
+
         }
-        if(jRadioButton7.isSelected()){
+        if (jRadioButton7.isSelected()) {
             Editeur editeur = null;
             try {
                 editeur = new Editeur(jTnomEditeur2.getText());
@@ -1291,32 +1216,29 @@ public class jfBookStore extends javax.swing.JFrame {
         }
         jCEditeur.setModel(initModelEditeur());
         jFrame1.setVisible(false);
-        
+
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jCEditeurActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCEditeurActionPerformed
 
-        
+
     }//GEN-LAST:event_jCEditeurActionPerformed
 
     private void jCEditeurItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCEditeurItemStateChanged
-       
-        Editeur editeur =(Editeur) jCEditeur.getSelectedItem();
-        
-        
+
+        Editeur editeur = (Editeur) jCEditeur.getSelectedItem();
+
         jTnomEditeur2.setText(editeur.getNomEditeur());
         jCstatutEditeur.setSelectedItem(editeur.getStatutEditeur());
-        jTlogoEditeur.setText(editeur.getLogoEditeur()); 
-        
-        
-        
+        jTlogoEditeur.setText(editeur.getLogoEditeur());
+
+
     }//GEN-LAST:event_jCEditeurItemStateChanged
 
     private void jButton3ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jButton3ItemStateChanged
-        
-       
-            jCEditeur.setModel(initModelEditeur());
-        
+
+        jCEditeur.setModel(initModelEditeur());
+
     }//GEN-LAST:event_jButton3ItemStateChanged
 
     private void jRadioButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton4ActionPerformed
@@ -1339,7 +1261,7 @@ public class jfBookStore extends javax.swing.JFrame {
         jFrame2.setSize(600, 500);
         jFrame2.setLocation(550, 200);
         jFrame2.setVisible(true);
-        
+
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
@@ -1348,9 +1270,9 @@ public class jfBookStore extends javax.swing.JFrame {
         chooser.setDialogTitle("Menu");
         chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         chooser.setAcceptAllFileFilterUsed(false);
-        
+
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            System.out.println("getSelectedFile() : "+  chooser.getSelectedFile());
+            System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
             File f = chooser.getSelectedFile();
             BufferedImage im = null;
             try {
@@ -1358,88 +1280,85 @@ public class jfBookStore extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(jfBookStore.class.getName()).log(Level.SEVERE, null, ex);
             }
-            jLImageAuteur.setIcon(new ImageIcon(im.getScaledInstance(jPanel6.getWidth(), jPanel6.getHeight(),0)));
+            jLImageAuteur.setIcon(new ImageIcon(im.getScaledInstance(jPanel6.getWidth(), jPanel6.getHeight(), 0)));
             //Redimensionner l'image a la taille du jPanel1
             jPanel6.add(jLImageAuteur);
-            
-        }
-        else {
+
+        } else {
             System.out.println("Pas de fichier séléctioné ");
         }
-        
+
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        if(jRcreeAuteur.isSelected()){
+        if (jRcreeAuteur.isSelected()) {
             Auteur auteur = new Auteur();
             auteur.setNomAuteur(jTnomAuteur.getText());
             auteur.setPrenomAuteur(jTprenomAuteur.getText());
             auteur.setBioAuteur(jTbioAuteur.getText());
             auteur.setNationaliteAuteur(jTnationaliteAuteur.getText());
-            
+
             LocalDate d = LocalDate.parse(jDateChooserAuteurNaissance.getDateFormatString());
             auteur.setDateNaissanceAuteur(d);
-            
+
             LocalDate d2 = LocalDate.parse(jDateChooserAuteurDeces.getDateFormatString());
             auteur.setDateDecesAuteur(d2);
             auteur.CreerAuteur();
             jFrame2.setVisible(false);
 
         }
-        if(jREdiAuteur.isSelected()){
+        if (jREdiAuteur.isSelected()) {
             Auteur auteur = new Auteur();
             auteur.setNomAuteur(jTnomAuteur.getText());
             auteur.setPrenomAuteur(jTprenomAuteur.getText());
             auteur.setBioAuteur(jTbioAuteur.getText());
             auteur.setNationaliteAuteur(jTnationaliteAuteur.getText());
-            
+
             LocalDate d = LocalDate.parse(jDateChooserAuteurNaissance.getDateFormatString());
             auteur.setDateNaissanceAuteur(d);
-            
+
             LocalDate d2 = LocalDate.parse(jDateChooserAuteurDeces.getDateFormatString());
             auteur.setDateDecesAuteur(d2);
 
             auteur.UpdateAuteur();
             jFrame2.setVisible(false);
         }
-        if(jReffAuteur.isSelected()){
+        if (jReffAuteur.isSelected()) {
             Auteur auteur = new Auteur();
             auteur.setNomAuteur(jTnomAuteur.getText());
             auteur.setPrenomAuteur(jTprenomAuteur.getText());
             auteur.setBioAuteur(jTbioAuteur.getText());
             auteur.setNationaliteAuteur(jTnationaliteAuteur.getText());
-            
+
             LocalDate d = LocalDate.parse(jDateChooserAuteurNaissance.getDateFormatString());
             auteur.setDateNaissanceAuteur(d);
-            
+
             LocalDate d2 = LocalDate.parse(jDateChooserAuteurDeces.getDateFormatString());
             auteur.setDateDecesAuteur(d2);
             jFrame2.setVisible(false);
-            
+
         }
-        if(jRselAuteur.isSelected()){
+        if (jRselAuteur.isSelected()) {
             Auteur auteur = new Auteur();
             auteur.setNomAuteur(jTnomAuteur.getText());
             auteur.setPrenomAuteur(jTprenomAuteur.getText());
             auteur.setBioAuteur(jTbioAuteur.getText());
             auteur.setNationaliteAuteur(jTnationaliteAuteur.getText());
-            
+
             String s = jDateChooserAuteurNaissance.getDate().toString();
             LocalDate d = LocalDate.parse(s, DateTimeFormatter.ISO_DATE);
             auteur.setDateNaissanceAuteur(d);
-            
+
             LocalDate d2 = LocalDate.parse(jDateChooserAuteurDeces.getDateFormatString());
             auteur.setDateDecesAuteur(d2);
-            
+
             jtnomAuteurMain.setText(jTnomAuteur.getText());
             jFrame2.setVisible(false);
 
-            
-            
         }
     }//GEN-LAST:event_jButton6ActionPerformed
 
-    public void editEditeur(){
+    public void editEditeur() {
         this.setVisible(true);
         jFrame1.setSize(300, 500);
         jFrame1.setLocation(550, 200);
@@ -1447,50 +1366,43 @@ public class jfBookStore extends javax.swing.JFrame {
         jButton4.setEnabled(false);
         jCEditeur.setModel(initModelEditeur());
     }
-    
-	
-    public void editAuteur(){
+
+    public void editAuteur() {
         this.setVisible(true);
         jFrame2.setSize(600, 500);
         jFrame2.setLocation(550, 200);
         jFrame2.setVisible(true);
     }
-    
+
     private void jReffAuteurActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jReffAuteurActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jReffAuteurActionPerformed
 
     private void jCAuteursItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCAuteursItemStateChanged
-        Auteur auteur =(Auteur) jCAuteurs.getSelectedItem();
+        Auteur auteur = (Auteur) jCAuteurs.getSelectedItem();
         System.out.println(auteur);
-        
-        
+
         jTnomAuteur.setText(auteur.getNomAuteur());
-        
+
         jTprenomAuteur.setText(auteur.getPrenomAuteur());
-        jTnationaliteAuteur.setText(auteur.getNationaliteAuteur()); 
-        jTbioAuteur.setText(auteur.getBioAuteur()); 
+        jTnationaliteAuteur.setText(auteur.getNationaliteAuteur());
+        jTbioAuteur.setText(auteur.getBioAuteur());
         System.out.println(auteur.getDateNaissanceAuteur());
         System.out.println(auteur.getDateDecesAuteur());
-        
+
         Date d = Date.valueOf(auteur.getDateNaissanceAuteur());
-            jDateChooserAuteurNaissance.setDate(d);
-              
-        if(auteur.getDateDecesAuteur() == null){
+        jDateChooserAuteurNaissance.setDate(d);
+
+        if (auteur.getDateDecesAuteur() == null) {
             jDateChooserAuteurDeces.setDate(null);
-        }
-        else {
+        } else {
             Date d2 = Date.valueOf(auteur.getDateDecesAuteur());
             jDateChooserAuteurDeces.setDate(d2);
         }
-        
-        
-        
-        
+
 //        LocalDate d = LocalDate.parse(jTdateDeNaissanceAuteur.getText());
 //        auteur.setDateNaissanceAuteur(d);
 //        jTdateDeNaissanceAuteur.setText(d.toString());
-        
 //        LocalDate d2 = LocalDate.parse(jTdateDeDecesAuteur.getText());
 //        auteur.setDateDecesAuteur(d2);
 //        jTdateDeDecesAuteur.setText(d2.toString());

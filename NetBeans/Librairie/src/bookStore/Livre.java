@@ -14,10 +14,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  *
@@ -55,37 +51,27 @@ public class Livre {
         
     }
     
-    public Livre(String titreLivre, String isbnLivre) throws Exception{
-        this();
-        setTitreLivre(titreLivre);
-        setIsbnLivre(isbnLivre);
-        selectUnLivre();
-        
-    }
-    
     public void getSqlData() throws SQLException, Exception {
 
         String req = " SELECT liv.isbnLivre, "
-                    + " liv.nomTVA, "
-                    + " liv.nomEditeur, "
-                    + " liv.titreLivre, "
-                    + " liv.sousTitreLivre, "
-                    + " liv.dateParutionLivre, "
-                    + " liv.resumeLivre, "
-                    + " liv.extraitLivre, "
-                    + " liv.imageLivre, "
-                    + " liv.prixHTLivre, "
-                    + " liv.poidLivre, "
-                    + " liv.affichageLivre,"
-                    + " red.idAuteur,"
-                    + " gen.idSousThematique"
+                    + "     liv.nomTVA, "
+                    + "     liv.nomEditeur, "
+                    + "     liv.titreLivre, "
+                    + "     liv.sousTitreLivre, "
+                    + "     liv.dateParutionLivre, "
+                    + "     liv.resumeLivre, "
+                    + "     liv.extraitLivre, "
+                    + "     liv.imageLivre, "
+                    + "     liv.prixHTLivre, "
+                    + "     liv.poidLivre, "
+                    + "     liv.affichageLivre,"
+                    + "     gen.idSousThematique"
                     + " FROM "
-                    + " Livre liv"
-                    + " JOIN Redaction red"
-                    + " ON liv.isbnLivre = red.isbnLivre"
+                    + "     Livre liv"
                     + " JOIN Genre gen"
-                    + " ON liv.isbnLivre = gen.isbnLivre"
-                    + " WHERE liv.isbnLivre = ?";
+                    + "     ON liv.isbnLivre = gen.isbnLivre"
+                    + " WHERE "
+                    + "     liv.isbnLivre = ?";
         
         try (
                 Connection cnt = new SqlManager().GetConnection();
@@ -96,22 +82,11 @@ public class Livre {
             stm.setString(1, getIsbnLivre());
             ResultSet rs = stm.executeQuery();
 
-            while (rs.next()) {
+            if (rs.next()) {
                 
-
+                // Définition proprièté du livre
                 setIsbnLivre(rs.getString("isbnLivre"));
                 setNomTVA(rs.getString("nomTVA"));
-                
-                Editeur newEditeur = new Editeur(rs.getString("nomEditeur"));
-                setEditeur(newEditeur);
-                   
-                try{
-                    Thematique newThematique = new Thematique(rs.getString("idSousThematique"));
-                    mesThematique.add(newThematique);
-                } catch (Exception ex){
-                    
-                }
-                
                 setTitreLivre(rs.getString("titreLivre"));
                 setSousTitreLivre(rs.getString("sousTitreLivre"));
                 setDateParutionLivre((rs.getDate("dateParutionLivre")).toLocalDate());
@@ -122,12 +97,15 @@ public class Livre {
                 setPoidLivre(rs.getInt("poidLivre"));
                 setAffichageLivre(rs.getBoolean("affichageLivre"));
                 
+                // Définition liste auteur du livre
+                mesAuteur.addAll(Auteur.AffichageAuteur(rs.getString("isbnLivre")));
+                
+                // Définition Editeur du livre
+                setEditeur(new Editeur(rs.getString("nomEditeur")));
+                
+                // Définition des thématique du livre
+                mesThematique.addAll(Thematique.getThematiqueLivre(rs.getString("isbnLivre")));
             }
-            mesAuteur = Auteur.AffichageAuteur(getIsbnLivre());
-            for (int i = 0; i < mesThematique.size(); i++) {
-                mesThematique = Thematique.AffichageSousThematique(Thematique.AffichageThematique().get(i).getNomThematique());
-            }
-            
             
         } catch (SQLException ex) {
             throw ex;
@@ -141,9 +119,7 @@ public class Livre {
     
     public void UpdateLivre2() throws SQLException, Exception {
         
-        SqlManager sql1 = null;
-        
-            sql1 = new SqlManager();
+        SqlManager sql1 = new SqlManager();
        
 
         String req = " UPDATE Livre"
@@ -180,74 +156,11 @@ public class Livre {
             pstm2.setBoolean(i++, isAffichageLivre());
             pstm2.setString(i++, getIsbnLivre());
             
-            int j = pstm2.executeUpdate();
-            System.out.println("nombre de lignes affectées : " + j);
+            pstm2.executeUpdate();
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    
-    public void selectUnLivre() throws SQLException, Exception {
-
-        String req = "SELECT liv.isbnLivre, "
-                    + " liv.nomTVA, "
-                    + " liv.nomEditeur, "
-                    + " liv.titreLivre, "
-                    + " liv.sousTitreLivre, "
-                    + " liv.dateParutionLivre, "
-                    + " liv.resumeLivre, "
-                    + " liv.extraitLivre, "
-                    + " liv.imageLivre, "
-                    + " liv.prixHTLivre, "
-                    + " liv.poidLivre, "
-                    + " liv.affichageLivre,"
-                    + " red.idAuteur,"
-                    + " gen.idSousThematique"
-                    + " FROM "
-                    + " Livre liv"
-                    + " JOIN Redaction red"
-                    + " ON liv.isbnLivre = red.isbnLivre"
-                    + " JOIN Genre gen"
-                    + " ON liv.isbnLivre = gen.isbnLivre"
-                    + " WHERE liv.isbnLivre = ?";
-        
-        try (
-                Connection cnt = new SqlManager().GetConnection();
-                PreparedStatement stm = cnt.prepareStatement(req);
-
-            ) {
-            
-            stm.setString(1, getIsbnLivre());
-            ResultSet rs = stm.executeQuery();
-
-            while (rs.next()) {
-                
-
-                setIsbnLivre(rs.getString("isbnLivre"));
-                setNomTVA(rs.getString("nomTVA"));
-                    Editeur newEditeur = new Editeur(rs.getString("nomEditeur"));
-                    newEditeur.getSqlData();
-                setEditeur(newEditeur);
-                setTitreLivre(rs.getString("titreLivre"));
-                setSousTitreLivre(rs.getString("sousTitreLivre"));
-                setDateParutionLivre((rs.getDate("dateParutionLivre")).toLocalDate());
-                setResumeLivre(rs.getString("resumeLivre"));
-                setExtraitLivre(rs.getString("extraitLivre"));
-                setImageLivre(rs.getString("imageLivre"));
-                setPrixHTLivre(rs.getFloat("prixHTLivre"));
-                setPoidLivre(rs.getInt("poidLivre"));
-                setAffichageLivre(rs.getBoolean("affichageLivre"));
-                
-            }
-            
-            
-        } catch (SQLException ex) {
-            throw ex;
-        } catch (Exception ex) {
             throw ex;
         }
-        
     }
     
     @Override
@@ -379,7 +292,7 @@ public class Livre {
         this.affichageLivre = affichageLivre;
     }
 
-    public static ArrayList<Livre> AffichageLivre() {
+    public static ArrayList<Livre> AffichageLivre() throws SQLException, Exception {
 
         ArrayList<Livre> Biblio = new ArrayList();
 
@@ -388,49 +301,63 @@ public class Livre {
         try (Connection cnt = sql1.GetConnection();
                 Statement stm = cnt.createStatement();) {
 
-            String req = "select l.isbnLivre, "
-                    + " l.titreLivre, "
-                    + " e.nomEditeur, "
-                    + " e.logoEditeur, "
-                    + " e.statutEditeur, "
-                    + " a.nomAuteur, "
-                    + " a.prenomAuteur,"
-                    + " a.idAuteur"
-                    + " from LIVRE l "
-                    + " join Editeur e "
-                    + " on l.nomEditeur = e.nomEditeur"
-                    + " join Redaction red "
-                    + " on l.isbnLivre = red.isbnLivre"
-                    + " join Auteur a "
-                    + " on red.idAuteur = a.idAuteur ";
+            String req = "SELECT liv.isbnLivre, "
+                    + "     liv.nomTVA, "
+                    + "     liv.nomEditeur, "
+                    + "     liv.titreLivre, "
+                    + "     liv.sousTitreLivre, "
+                    + "     liv.dateParutionLivre, "
+                    + "     liv.resumeLivre, "
+                    + "     liv.extraitLivre, "
+                    + "     liv.imageLivre, "
+                    + "     liv.prixHTLivre, "
+                    + "     liv.poidLivre, "
+                    + "     liv.affichageLivre,"
+                    + "     gen.idSousThematique"
+                    + " FROM "
+                    + "     Livre liv"
+                    + " JOIN Genre gen"
+                    + "     ON liv.isbnLivre = gen.isbnLivre";
 
             ResultSet rs = stm.executeQuery(req);
 
             while (rs.next()) {
-                Livre livre = new Livre();
-
-                Auteur auteur = new Auteur(rs.getInt("idAuteur"));
-                auteur.setPrenomAuteur(rs.getString("prenomAuteur"));
-                auteur.setNomAuteur(rs.getString("nomAuteur"));
-                livre.setIsbnLivre(rs.getString("isbnLivre"));
-                Editeur newEditeur = new Editeur(rs.getString("nomEditeur"));
-                newEditeur.setLogoEditeur(rs.getString("logoEditeur"));
-                newEditeur.setStatutEditeur(rs.getString("statutEditeur"));
-                livre.setEditeur(newEditeur);
-                livre.setTitreLivre(rs.getString("titreLivre"));
-
-
-                Biblio.add(livre);
+                
+                // Définition proprièté du livre
+//                Livre newLivre = new Livre();
+//                
+//                newLivre.setIsbnLivre(rs.getString("isbnLivre"));
+//                newLivre.setNomTVA(rs.getString("nomTVA"));
+//                newLivre.setTitreLivre(rs.getString("titreLivre"));
+//                newLivre.setSousTitreLivre(rs.getString("sousTitreLivre"));
+//                newLivre.setDateParutionLivre((rs.getDate("dateParutionLivre")).toLocalDate());
+//                newLivre.setResumeLivre(rs.getString("resumeLivre"));
+//                newLivre.setExtraitLivre(rs.getString("extraitLivre"));
+//                newLivre.setImageLivre(rs.getString("imageLivre"));
+//                newLivre.setPrixHTLivre(rs.getFloat("prixHTLivre"));
+//                newLivre.setPoidLivre(rs.getInt("poidLivre"));
+//                newLivre.setAffichageLivre(rs.getBoolean("affichageLivre"));
+//                
+//                // Définition liste auteur du livre
+//               newLivre.setMesAuteur(Auteur.AffichageAuteur(rs.getString("isbnLivre")));
+//                
+//                // Définition Editeur du livre
+//                newLivre.setEditeur(new Editeur(rs.getString("nomEditeur")));
+//                
+//                // Définition des thématique du livre
+//                newLivre.setMesThematique(Thematique.getThematiqueLivre(rs.getString("isbnLivre")));
+//
+//
+//                Biblio.add(newLivre);
+                
+                Biblio.add(new Livre(rs.getString("isbnLivre")));
 
             }
-            for (int i = 0; i < Biblio.size(); i++) {
-                Biblio.get(i).toString();
-            }
+            
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
+            throw ex;
         } catch (Exception ex) {
-            Logger.getLogger(Livre.class.getName()).log(Level.SEVERE, null, ex);
+            throw ex;
         }
         return Biblio;
     }
@@ -560,13 +487,8 @@ public class Livre {
         }
         return Biblio;
     }
-    public static void main(String[] args) throws SQLException, Exception {
-        for (Livre book : Livre.searchLivres(null, null, null, null, "a*", null)){
-            System.out.println(book);
-        }
-    }
     
-    public void CreerLivre() {
+    public void CreerLivre() throws SQLException {
 
         SqlManager sql1 = null;
 
@@ -574,18 +496,18 @@ public class Livre {
        
         String req = "insert into Livre"
                 + "("
-                + "isbnLivre, "
-                + "nomTVA, "
-                + "nomEditeur, "
-                + "titreLivre, "
-                + "sousTitreLivre, "
-                + "dateParutionLivre, "
-                + "resumeLivre, "
-                + "extraitLivre, "
-                + "imageLivre, "
-                + "prixHTLivre, "
-                + "poidLivre, "
-                + "affichageLivre"
+                + "     isbnLivre, "
+                + "     nomTVA, "
+                + "     nomEditeur, "
+                + "     titreLivre, "
+                + "     sousTitreLivre, "
+                + "     dateParutionLivre, "
+                + "     resumeLivre, "
+                + "     extraitLivre, "
+                + "     imageLivre, "
+                + "     prixHTLivre, "
+                + "     poidLivre, "
+                + "     affichageLivre"
                 + ")"
                 + "values(?,?,?,?,?,?,?,?,?,?,?,?)";
 
@@ -594,29 +516,29 @@ public class Livre {
 
             java.sql.Date d = java.sql.Date.valueOf(this.getDateParutionLivre());
 
-            pstm.setString(1, getIsbnLivre());
-            pstm.setString(2, getNomTVA());
-            pstm.setString(3, getEditeur().getNomEditeur());
-            pstm.setString(4, getTitreLivre());
-            pstm.setString(5, getSousTitreLivre());
-            pstm.setDate(6, d);
-            pstm.setString(7, getResumeLivre());
-            pstm.setString(8, getExtraitLivre());
-            pstm.setString(9, getImageLivre());
-            pstm.setFloat(10, getPrixHTLivre());
-            pstm.setInt(11, getPoidLivre());
-            pstm.setBoolean(12, isAffichageLivre());
+            int i = 1;
+            pstm.setString(i++, getIsbnLivre());
+            pstm.setString(i++, getNomTVA());
+            pstm.setString(i++, getEditeur().getNomEditeur());
+            pstm.setString(i++, getTitreLivre());
+            pstm.setString(i++, getSousTitreLivre());
+            pstm.setDate(i++, d);
+            pstm.setString(i++, getResumeLivre());
+            pstm.setString(i++, getExtraitLivre());
+            pstm.setString(i++, getImageLivre());
+            pstm.setFloat(i++, getPrixHTLivre());
+            pstm.setInt(i++, getPoidLivre());
+            pstm.setBoolean(i++, isAffichageLivre());
 
-            int i = pstm.executeUpdate();
-            System.out.println("nombre de lignes affectées : " + i);
+            pstm.executeUpdate();
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            throw ex;
         }
 
     }
     
-    public void deleteLivre(){
+    public void deleteLivre() throws SQLException{
         SqlManager sql1 = null;
 
             sql1 = new SqlManager();
@@ -626,23 +548,20 @@ public class Livre {
                 + " SET "
                 + " affichageLivre = 'false'"
                 + " where isbnLivre = ?";
-        
+
         try (Connection cnt = sql1.GetConnection();
                 PreparedStatement pstm = cnt.prepareStatement(req);) {
             int i = 1;
-            
+
             pstm.setString(i++, getIsbnLivre());
-        
-            
-        int j = pstm.executeUpdate();
-            System.out.println("nombre de lignes affectées : " + j);
+            pstm.executeUpdate();
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            throw ex;
         }
     }
     
-    public void UpdateLivre(){
+    public void UpdateLivre() throws SQLException{
         SqlManager sql1 = new SqlManager();   
         
         String req = " UPDATE Livre"
@@ -682,11 +601,10 @@ public class Livre {
             pstm.setBoolean(i++, isAffichageLivre());
             pstm.setString(i++, getIsbnLivre());
             
-            int j = pstm.executeUpdate();
-            System.out.println("nombre de lignes affectées : " + j);
+            pstm.executeUpdate();
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            throw ex;
         }
     }   
 

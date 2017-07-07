@@ -12,9 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -47,12 +44,13 @@ public class Editeur {
     public void getSqlData() throws SQLException, Exception {
 
         String req = "SELECT "
-                    + " nomEditeur, "
-                    + " logoEditeur, "
-                    + " statutEditeur "
+                    + "     nomEditeur, "
+                    + "     logoEditeur, "
+                    + "     statutEditeur "
                     + " FROM "
-                    + " Editeur"
-                    + " WHERE nomEditeur = ?";
+                    + "     Editeur"
+                    + " WHERE "
+                    + "     nomEditeur = ?";
         
         try (
                 Connection cnt = new SqlManager().GetConnection();
@@ -119,36 +117,25 @@ public class Editeur {
     
     public void deleteEditeur() throws SQLException, Exception {
         
-        SqlManager sql1 = null;
-        
-            sql1 = new SqlManager();
+        SqlManager sql1 = new SqlManager();
        
-
         String req = " UPDATE Editeur"
                 + " SET "
                 + " statutEditeur = EdiIna"
                 + " from Editeur "
                 + " where nomEditeur = ?";
 
-        try (Connection cnt2 = sql1.GetConnection();
-                PreparedStatement pstm2 = cnt2.prepareStatement(req);) {
+        try (
+                Connection cnt2 = sql1.GetConnection();
+                PreparedStatement pstm2 = cnt2.prepareStatement(req);
+                ) {
             int i = 1;
-            Editeur editeur = new Editeur();
-            editeur.deleteStatutEditeur();
-            if (editeur.getStatutEditeur() == null){
-                pstm2.setString(i++,""+ java.sql.Types.NULL);
-            } else {
-                pstm2.setString(i++, editeur.getStatutEditeur());
-            }
             pstm2.setString(i++, getNomEditeur());
             
-            
-            
-            int j = pstm2.executeUpdate();
-            System.out.println("nombre de lignes affectées : " + j);
+            pstm2.executeUpdate();
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            throw ex;
         }
     }
 
@@ -161,11 +148,12 @@ public class Editeur {
 
         String req = " UPDATE Editeur"
                 + " SET "
-                + " nomEditeur = ?,"
-                + " logoEditeur = ?,"
-                + " statutEditeur = ?"
-                + " from Editeur "
-                + " where nomEditeur = ?";
+                + "     nomEditeur = ?,"
+                + "     logoEditeur = ?,"
+                + "     statutEditeur = ?"
+                + "     from Editeur "
+                + " WHERE "
+                + "     nomEditeur = ?";
 
         try (Connection cnt2 = sql1.GetConnection();
                 PreparedStatement pstm2 = cnt2.prepareStatement(req);) {
@@ -179,17 +167,14 @@ public class Editeur {
             }
             pstm2.setString(i++, getNomEditeur());
             
-            
-            
-            int j = pstm2.executeUpdate();
-            System.out.println("nombre de lignes affectées : " + j);
+            pstm2.executeUpdate();
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            throw ex;
         }
     }
 
-    public static ArrayList<Editeur> AffichageEditeur() {
+    public static ArrayList<Editeur> AffichageEditeur() throws SQLException, Exception {
 
         ArrayList<Editeur> ListeEditeur = new ArrayList();
 
@@ -199,11 +184,14 @@ public class Editeur {
         try (Connection cnt = sql1.GetConnection();
                 Statement stm = cnt.createStatement();) {
 
-            String req = "select nomEditeur,"
-                    + " logoEditeur,"
-                    + " statutEditeur "
-                    + " FROM Editeur "
-                    + " order by nomEditeur";
+            String req = "SELECT "
+                    + "     nomEditeur,"
+                    + "     logoEditeur,"
+                    + "     statutEditeur "
+                    + " FROM "
+                    + "     Editeur "
+                    + " ORDER BY "
+                    + "     nomEditeur";
 
             ResultSet rs = stm.executeQuery(req);
 
@@ -218,14 +206,14 @@ public class Editeur {
             }
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            throw ex;
         } catch (Exception ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
+            throw ex;
         }
         return ListeEditeur;
     }
 
-    public static ArrayList<Editeur> AffichageStatutEditeur() {
+    public static ArrayList<Editeur> AffichageStatutEditeur() throws SQLException, Exception {
 
         ArrayList<Editeur> ListeEditeur = new ArrayList();
 
@@ -254,14 +242,14 @@ public class Editeur {
             }
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            throw ex;
         } catch (Exception ex) {
-            Logger.getLogger(Editeur.class.getName()).log(Level.SEVERE, null, ex);
+            throw ex;
         }
         return ListeEditeur;
     }
     
-    public void CreerEditeur() {
+    public void CreerEditeur() throws SQLException {
 
         SqlManager sql1 = new SqlManager();
         
@@ -280,11 +268,12 @@ public class Editeur {
             pstm.setString(2, getLogoEditeur());
             pstm.setString(3, getStatutEditeur());
 
-            int i = pstm.executeUpdate();
-            System.out.println("nombre de lignes affectées : " + i);
+            if (pstm.executeUpdate() == 0){
+                throw new SQLException("Echec création editeur !!!");
+            }
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            throw ex;
         }
 
     }

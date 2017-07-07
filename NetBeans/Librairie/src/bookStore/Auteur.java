@@ -10,7 +10,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -167,13 +166,15 @@ public class Auteur {
 
         SqlManager sql1 = new SqlManager();
         
-        String req = "select a.idAuteur"
-                    + " from Auteur a"
-                    + " join Redaction r"
-                    + " on a.idAuteur = r.idAuteur "
-                    + " join Livre l"
-                    + " on r.isbnLivre = l.isbnLivre"
-                    + " AND l.isbnLIvre = ? "
+        String req = "SELECT "
+                    + "     a.idAuteur"
+                    + " FROM "
+                    + "     Auteur a"
+                    + " JOIN Redaction r"
+                    + "     ON a.idAuteur = r.idAuteur "
+                    + " JOIN Livre l"
+                    + "     ON r.isbnLivre = l.isbnLivre"
+                    + "     AND l.isbnLIvre = ? "
                     + " ORDER BY nomAuteur ";
 
         try (Connection cnt = sql1.GetConnection();
@@ -186,9 +187,6 @@ public class Auteur {
 
             while (rs.next()) {
                 Auteur auteur = new Auteur(rs.getInt("idAuteur"));
-
-                //System.out.println("Auteur = " + auteur.getNomAuteur() + " " + auteur.getPrenomAuteur());
-
                 listeAuteur.add(auteur);
             }
             for (int i = 0; i < listeAuteur.size(); i++) {
@@ -244,7 +242,7 @@ public class Auteur {
 
             sql1 = new SqlManager();
        
-        String req = "insert into Auteur"
+        String req = "INSERT INTO Auteur"
                 + "("
                 + " nomAuteur,"
                 + " prenomAuteur,"
@@ -254,7 +252,7 @@ public class Auteur {
                 + " photoAuteur,"
                 + " bioAuteur"
                 + ")"
-                + "values(?,?,?,?,?,?,?)";
+                + "VALUES(?,?,?,?,?,?,?)";
 
         try (Connection cnt = sql1.GetConnection();
                 PreparedStatement pstm = cnt.prepareStatement(req);) {
@@ -272,8 +270,7 @@ public class Auteur {
             pstm.setString(6, getPhotoAuteur());
             pstm.setString(7, getBioAuteur());
 
-            int i = pstm.executeUpdate();
-            System.out.println("nombre de lignes affectées : " + i);
+            pstm.executeUpdate();
 
         } catch (SQLException ex) {
             System.err.println("2) erreur sql : " + ex.getMessage());
@@ -289,12 +286,13 @@ public class Auteur {
         
         String req = " UPDATE Auteur "
                 + " SET "
-                + " nomAuteur = ?,"
-                + " prenomAuteur = ?,"
-                + " statutAuteur = ?,"
-                + " nationaliteAuteur = ?,"
-                + " bioAuteur = ?"
-                + " where idAuteur = ? ";
+                + "     nomAuteur = ?,"
+                + "     prenomAuteur = ?,"
+                + "     statutAuteur = ?,"
+                + "     nationaliteAuteur = ?,"
+                + "     bioAuteur = ?"
+                + " WHERE "
+                + "     idAuteur = ? ";
         
         try (Connection cnt = sql1.GetConnection();
                 PreparedStatement pstm = cnt.prepareStatement(req);) {
@@ -310,8 +308,7 @@ public class Auteur {
             pstm.setString(i++, getBioAuteur());
             pstm.setInt(i++, getIdAuteur());
             
-            int j = pstm.executeUpdate();
-            System.out.println("nombre de lignes affectées : " + j);
+            pstm.executeUpdate();
 
         } catch (SQLException ex) {
             System.err.println("2) erreur sql : " + ex.getMessage());

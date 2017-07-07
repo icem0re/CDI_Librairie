@@ -12,8 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import javax.swing.JOptionPane;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  *
@@ -44,9 +42,12 @@ public class Thematique {
     public void getAllThematique() throws SQLException{
         
         String req = "SELECT "
-                    + " * "
+                    + "     idSousThematique,"
+                    + "     nomThematique,"
+                    + "     nomSousThematique,"
+                    + "     descriptionSousThematique"
                     + " FROM "
-                    + " SousThematique";
+                    + "     SousThematique";
                     
         
         try (
@@ -77,13 +78,14 @@ public class Thematique {
     public void getSqlData() throws SQLException, Exception {
 
         String req = "SELECT "
-                    + " idSousThematique, "
-                    + " nomThematique, "
-                    + " nomSousThematique, "
-                    + " descriptionSousThematique "
+                    + "     idSousThematique, "
+                    + "     nomThematique, "
+                    + "     nomSousThematique, "
+                    + "     descriptionSousThematique "
                     + " FROM "
-                    + " SousThematique"
-                    + " WHERE idSousThematique = ?";
+                    + "     SousThematique"
+                    + " WHERE "
+                    + "     idSousThematique = ?";
         
         try (
                 Connection cnt = new SqlManager().GetConnection();
@@ -147,7 +149,7 @@ public class Thematique {
         this.descriptionSousThematique = descriptionSousThematique;
     }
 
-    public static ArrayList<Thematique> AffichageThematique() {
+    public static ArrayList<Thematique> AffichageThematique() throws SQLException {
 
         ArrayList<Thematique> listeThematique = new ArrayList();
 
@@ -159,11 +161,12 @@ public class Thematique {
         try (Connection cnt = sql1.GetConnection();
                 Statement stm = cnt.createStatement();) {
 
-            String req = "select t.nomThematique, s.nomSousThematique"
-                    + " from Thematique t"
-                    + " join sousThematique s"
-                    + " on t.nomThematique = s.nomThematique"
-                    + " ORDER BY nomThematique ";
+            String req = "SELECT "
+                    + "     nomThematique"
+                    + " FROM "
+                    + "     Thematique"
+                    + " ORDER BY "
+                    + "     nomThematique ";
 
             ResultSet rs = stm.executeQuery(req);
 
@@ -178,12 +181,12 @@ public class Thematique {
                 listeThematique.get(i).toString();
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            throw ex;
         }
         return listeThematique;
     }
 
-    public static ArrayList<Thematique> AffichageSousThematique(String nomThematique) {
+    public static ArrayList<Thematique> AffichageSousThematique(String nomThematique) throws SQLException {
 
         ArrayList<Thematique> listeSousThematique = new ArrayList();
             
@@ -216,13 +219,13 @@ public class Thematique {
                 listeSousThematique.get(i).toString();
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            throw ex;
         }
         return listeSousThematique;
     }
     
 
-    public void CreerThematique() {
+    public void CreerThematique() throws SQLException {
 
         SqlManager sql1 = null;
 
@@ -239,16 +242,15 @@ public class Thematique {
 
             pstm.setString(1, getNomThematique());
 
-            int i = pstm.executeUpdate();
-            System.out.println("nombre de lignes affectées : " + i);
+            pstm.executeUpdate();
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            throw ex;
         }
 
     }
 
-    public void CreerSousThematique() {
+    public void CreerSousThematique() throws SQLException {
 
         SqlManager sql1 = null;
 
@@ -271,12 +273,46 @@ public class Thematique {
             pstm.setString(3, getNomSousThematique());
             pstm.setString(4, getDescriptionSousThematique());
 
-            int i = pstm.executeUpdate();
-            System.out.println("nombre de lignes affectées : " + i);
+            pstm.executeUpdate();
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            throw ex;
         }
 
     }
+    
+    
+    public static ArrayList<Thematique> getThematiqueLivre(String isbnLivre) throws SQLException, Exception {
+
+        ArrayList<Thematique> thematiqueDuLivre = new ArrayList();
+        
+        String req = "SELECT "
+                    + "     st.idSousThematique "
+                    + " FROM "
+                    + "     SousThematique st"
+                    + " JOIN genre gen "
+                    + "     ON st.idSousThematique = gen.idSousThematique"
+                    + " WHERE "
+                    + "     gen.isbnLivre = ?";
+        
+        try (
+                Connection cnt = new SqlManager().GetConnection();
+                PreparedStatement stm = cnt.prepareStatement(req);
+            ) {
+            
+            stm.setString(1, isbnLivre);
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                thematiqueDuLivre.add(new Thematique(rs.getString("idSousThematique")));
+            }
+            
+        } catch (SQLException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw ex;
+        }
+        return thematiqueDuLivre;
+    }
+        
 }

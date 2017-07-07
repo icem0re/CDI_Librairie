@@ -41,16 +41,14 @@ import javax.swing.table.TableColumn;
  */
 public class JDialogEventBook extends javax.swing.JDialog {
 
-    private Action buttonClicked = new AbstractAction()
-    {
-        public void actionPerformed(ActionEvent e)
-        {
+    private Action buttonClicked = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
             // get affected table
-            javax.swing.JTable table = (javax.swing.JTable)e.getSource();
+            javax.swing.JTable table = (javax.swing.JTable) e.getSource();
             // get affected row
-            int clickedRow = Integer.valueOf( e.getActionCommand() );
-            
-            ((JDialogEvent)self.getParent()).addRow((Livre) table.getValueAt(clickedRow, 0));
+            int clickedRow = Integer.valueOf(e.getActionCommand());
+
+            ((JDialogEvent) self.getParent()).addRow((Livre) table.getValueAt(clickedRow, 0));
 //            if (clickedRow == 0){
 //                new JDialogEvent(self, true, new Evenement()).setVisible(true);
 //            } else {
@@ -58,10 +56,10 @@ public class JDialogEventBook extends javax.swing.JDialog {
 //            }
         }
     };
-    
+
     private JDialogEventBook self;
     ImageIcon icon_add;
-    
+
     /**
      * Creates new form JDialogEventBook
      */
@@ -71,61 +69,74 @@ public class JDialogEventBook extends javax.swing.JDialog {
         initIcons();
         initComponents();
     }
-    
-    private void initIcons(){
+
+    private void initIcons() {
         icon_add = null;
         try {
             icon_add = new ImageIcon(getClass().getClassLoader().getResource("resources/images/icon_add_30.png"));
-        } catch (java.lang.NullPointerException ex) {}
+        } catch (java.lang.NullPointerException ex) {
+        }
     }
-    
-    protected void refreshTable (){
+
+    protected void refreshTable() {
         jTable.setModel(initTableModel());
-        
+
         jTable.getColumnModel().getColumn(0).setMinWidth(0);
         jTable.getColumnModel().getColumn(0).setMaxWidth(0);
-        
+
         jTable.getColumnModel().getColumn(1).setMinWidth(110);
         jTable.getColumnModel().getColumn(1).setMaxWidth(110);
-        
-        TableColumn iconColumn = jTable.getColumnModel().getColumn(jTable.getColumnModel().getColumnCount()-1);
+
+        TableColumn iconColumn = jTable.getColumnModel().getColumn(jTable.getColumnModel().getColumnCount() - 1);
         iconColumn.setMinWidth(40);
         iconColumn.setMaxWidth(40);
         ButtonColumn buttonColumn = new ButtonColumn(jTable, buttonClicked, iconColumn.getModelIndex());
-        
+
         jTable.setGridColor(Color.CYAN);
         jTable.setShowGrid(true);
         jTable.setShowHorizontalLines(true);
         jTable.setShowVerticalLines(false);
         jTable.setRowHeight(40);
     }
-    
-    private DefaultTableModel initTableModel(){
-        
+
+    private DefaultTableModel initTableModel() {
+
         DefaultTableModel myModel = new DefaultTableModel();
-        
+
         try {
-            
+
             myModel.addColumn("");
             myModel.addColumn("ISBN");
             myModel.addColumn("Titre");
             myModel.addColumn("Sous-Titre");
             myModel.addColumn("");
-            
+
             String isbn = null;
-            if (!jTextFieldISBN.getText().equals("")){isbn = jTextFieldISBN.getText();}
+            if (!jTextFieldISBN.getText().equals("")) {
+                isbn = jTextFieldISBN.getText();
+            }
             String titre = null;
-            if (!jTextFieldTitre.getText().equals("")){titre = jTextFieldTitre.getText();}
+            if (!jTextFieldTitre.getText().equals("")) {
+                titre = jTextFieldTitre.getText();
+            }
             String sousTitre = null;
-            if (!jTextFieldSousTitre.getText().equals("")){sousTitre = jTextFieldSousTitre.getText();}
+            if (!jTextFieldSousTitre.getText().equals("")) {
+                sousTitre = jTextFieldSousTitre.getText();
+            }
             String nomAuteur = null;
-            if (!jTextFieldNomAuteur.getText().equals("")){nomAuteur = jTextFieldNomAuteur.getText();}
+            if (!jTextFieldNomAuteur.getText().equals("")) {
+                nomAuteur = jTextFieldNomAuteur.getText();
+            }
             String prenomAuteur = null;
-            if (!jTextFieldPrenomAuteur.getText().equals("")){prenomAuteur = jTextFieldPrenomAuteur.getText();}
+            if (!jTextFieldPrenomAuteur.getText().equals("")) {
+                prenomAuteur = jTextFieldPrenomAuteur.getText();
+            }
             String nomEditeur = null;
-            if (jComboBoxEditeur.getSelectedItem() != null){nomEditeur = jComboBoxEditeur.getSelectedItem().toString();}
-            
-            for (Livre monLivre : Livre.searchLivres(isbn, titre, sousTitre, nomEditeur, nomAuteur, prenomAuteur)){
+            if (jComboBoxEditeur.getSelectedItem() != null) {
+                nomEditeur = jComboBoxEditeur.getSelectedItem().toString();
+            }
+
+            for (Livre monLivre : Livre.searchLivres(isbn, titre, sousTitre, nomEditeur, nomAuteur, prenomAuteur)) {
                 Vector monVec = new Vector();
                 monVec.add(monLivre);
                 monVec.add(monLivre.getIsbnLivre());
@@ -138,31 +149,32 @@ public class JDialogEventBook extends javax.swing.JDialog {
                 }
                 myModel.addRow(monVec);
             }
-        } catch (InvalidSearchException ex){
+        } catch (InvalidSearchException ex) {
             // Ne pas effectuer d'action
-        } catch (SQLException ex){
+        } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Erreur SQL", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
             //JOptionPane.showMessageDialog(this, ex.getMessage(), "Erreur System", JOptionPane.ERROR_MESSAGE);
         }
-        
-            return myModel;
-    }
-    
-    private DefaultComboBoxModel initComboEditeur(){
-        DefaultComboBoxModel myModel = new DefaultComboBoxModel();
-        
-        myModel.addElement(null);
-        for (Editeur monEditeur : Editeur.AffichageEditeur()){
-            myModel.addElement(monEditeur);
-        }
-        
+
         return myModel;
     }
 
-    
-    
-    
+    private DefaultComboBoxModel initComboEditeur() {
+        DefaultComboBoxModel myModel = new DefaultComboBoxModel();
+        myModel.addElement(null);
+        try {
+
+            for (Editeur monEditeur : Editeur.AffichageEditeur()) {
+                myModel.addElement(monEditeur);
+            }
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+        return myModel;
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
