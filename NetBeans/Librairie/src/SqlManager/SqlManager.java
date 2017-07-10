@@ -16,15 +16,18 @@
  */
 package SqlManager;
 
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -36,25 +39,30 @@ import java.util.logging.Logger;
  *
  * @author cdi415
  */
-public class SqlManager {
+public class SqlManager  implements Serializable {
     
-    private static final String protocol = "jdbc:sqlserver://";
     private static final String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    private static String jdbcKey = "jdbc/LibrairieDB";
     
-    // TODO : Next version see to store information outside of script
-    private static String user = "sa";
-    private static String mdp = "sa";
-    private static String ip = "localhost";
-    private static String database = ";database=Librairie";
+    private DataSource ds;
+    
     
     /**
      * SqlManager()
      * 
      * Initialise the SqlManager and verifies presence of driver
-     * @throws ClassNotFoundException 
      */
-    public SqlManager(){
-        testDriver();
+    public SqlManager() {
+        try {
+            testDriver();
+            InitialContext ict = new InitialContext();
+            ds= (DataSource) ict.lookup(SqlManager.jdbcKey);
+        } catch (NamingException ex) {
+            System.err.println("Error : Echec du chargement du pool de connexion ["
+                    + ex.getMessage()
+                    + "]");
+            System.exit(1246);
+        }
     }
     
     /**
@@ -79,31 +87,14 @@ public class SqlManager {
         }
     }
     
-    /**
-     * setCnxParameters(String user, String mdp, String ip, String database)
-     * 
-     * Allows to edit the connection parameters
-     * <b>WARNING : this will modifiy the parameters for all futur connections.</b>
-     * @param user username of connection
-     * @param mdp password of connection
-     * @param ip @ip of sql serveur
-     * @param database  name of the database
-     */
-    public void setCnxParameters(String user, String mdp, String ip, String database){
-        SqlManager.user = user;
-        SqlManager.mdp = mdp;
-        SqlManager.ip = ip;
-        SqlManager.database = ";database="+database;
-    }
     
     /**
      * Générates a connection to the DB
      * @return Connection
      * @throws SQLException 
      */
-    public Connection GetConnection() throws SQLException{
-        String url = protocol + ip + database;
-        return DriverManager.getConnection(url, user, mdp);
+    public Connection getConnection() throws SQLException{
+        return ds.getConnection();
     }
     
     /**
@@ -137,6 +128,11 @@ public class SqlManager {
     public static Boolean compareEncodedString(String text, String encodedtext){
         return encodedtext.equals(SqlManager.encodeString(text));
     }
+    
+    
+    
+    
+    
     
     
 }
